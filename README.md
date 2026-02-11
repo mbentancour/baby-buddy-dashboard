@@ -33,9 +33,14 @@ The backend acts as an API proxy so the Baby Buddy API key stays server-side and
 
 ## Home Assistant Add-on Installation
 
-1. Add this repository to your Home Assistant add-on store
-2. Install the **Baby Buddy Dashboard** add-on
-3. Configure the add-on with your Baby Buddy URL and API key:
+1. In Home Assistant, go to **Settings > Add-ons > Add-on Store**
+2. Click the **three dots** (top right) > **Repositories**
+3. Add this repository URL:
+   ```
+   https://github.com/mbentancour/baby-buddy-dashboard
+   ```
+4. Find **Baby Buddy Dashboard** in the store and click **Install**
+5. Configure the add-on with your Baby Buddy URL and API key:
    - **Baby Buddy URL** — full URL to your instance (e.g., `http://192.168.1.100:8000`)
    - **API Key** — found in Baby Buddy under *Settings > API Key*
    - **Refresh Interval** — polling interval in seconds (default: 30)
@@ -84,62 +89,69 @@ The script auto-installs npm and pip dependencies on first run. Press `Ctrl+C` t
 ### Building for production
 
 ```bash
-cd frontend
+cd baby-buddy-dashboard/frontend
 npm run build
 ```
 
-The built files are output to `frontend/dist/`.
+The built files are output to `baby-buddy-dashboard/frontend/dist/`.
 
 ## Project Structure
 
+This repository follows the [Home Assistant add-on repository](https://developers.home-assistant.io/docs/add-ons/repository/) layout — each add-on lives in its own subdirectory.
+
 ```
-baby-buddy-dashboard/
-├── backend/
-│   ├── server.py              # FastAPI app — API proxy + static file server
-│   └── requirements.txt       # Python dependencies
-├── frontend/
-│   ├── index.html             # Entry HTML
-│   ├── vite.config.js         # Vite config with API proxy for dev
-│   ├── package.json
-│   └── src/
-│       ├── main.jsx           # React entry point
-│       ├── App.jsx            # Main app shell — layout, tabs, modals, FAB
-│       ├── styles.css         # Global styles, CSS variables, animations
-│       ├── api.js             # API client for all Baby Buddy endpoints
-│       ├── hooks/
-│       │   ├── useBabyData.js # Fetches and polls all baby data
-│       │   └── useTimers.js   # Timer state management
-│       ├── tabs/
-│       │   ├── OverviewTab.jsx # Daily stats, timelines, and charts
-│       │   └── GrowthTab.jsx   # Weight, height, temperature trends
-│       ├── components/
-│       │   ├── Icons.jsx       # SVG icon components
-│       │   ├── StatCard.jsx    # Stat display card
-│       │   ├── SectionCard.jsx # Section container with header
-│       │   ├── TimelineItem.jsx # Timeline entry
-│       │   ├── TimerButton.jsx  # Timer start/stop button
-│       │   ├── DiaperBadge.jsx  # Diaper type badge
-│       │   ├── CustomTooltip.jsx # Chart tooltip
-│       │   ├── Modal.jsx        # Modal + form primitives
-│       │   └── forms/
-│       │       ├── FeedingForm.jsx
-│       │       ├── SleepForm.jsx
-│       │       ├── DiaperForm.jsx
-│       │       ├── TemperatureForm.jsx
-│       │       ├── TummyTimeForm.jsx
-│       │       └── NoteForm.jsx
-│       └── utils/
-│           ├── colors.js       # Color palette
-│           └── formatters.js   # Date, time, and data formatting
-├── .env.example               # Environment variable template
+baby-buddy-dashboard/               # ← repository root
+├── repository.yaml                  # HA add-on repository metadata
+├── README.md
+├── LICENSE
+├── .env.example                     # Environment variable template (local dev)
 ├── .gitignore
-├── config.yaml                # Home Assistant add-on config
-├── build.yaml                 # Docker multi-arch build config
-├── Dockerfile
-├── run.sh                     # Production entry script (Home Assistant)
-├── run_local.sh               # Local development script (sources .env)
-└── translations/
-    └── en.yaml                # HA config UI labels
+├── run_local.sh                     # Local development script (sources .env)
+│
+└── baby-buddy-dashboard/            # ← the add-on
+    ├── config.yaml                  # Home Assistant add-on config
+    ├── Dockerfile
+    ├── build.yaml                   # Docker multi-arch build config
+    ├── run.sh                       # Production entry script (Home Assistant)
+    ├── translations/
+    │   └── en.yaml                  # HA config UI labels
+    ├── backend/
+    │   ├── server.py                # FastAPI app — API proxy + static file server
+    │   └── requirements.txt         # Python dependencies
+    └── frontend/
+        ├── index.html               # Entry HTML
+        ├── vite.config.js           # Vite config with API proxy for dev
+        ├── package.json
+        └── src/
+            ├── main.jsx             # React entry point
+            ├── App.jsx              # Main app shell — layout, tabs, modals, FAB
+            ├── styles.css           # Global styles, CSS variables, animations
+            ├── api.js               # API client for all Baby Buddy endpoints
+            ├── hooks/
+            │   ├── useBabyData.js   # Fetches and polls all baby data
+            │   └── useTimers.js     # Timer state management
+            ├── tabs/
+            │   ├── OverviewTab.jsx  # Daily stats, timelines, and charts
+            │   └── GrowthTab.jsx    # Weight, height, temperature trends
+            ├── components/
+            │   ├── Icons.jsx        # SVG icon components
+            │   ├── StatCard.jsx     # Stat display card
+            │   ├── SectionCard.jsx  # Section container with header
+            │   ├── TimelineItem.jsx # Timeline entry
+            │   ├── TimerButton.jsx  # Timer start/stop button
+            │   ├── DiaperBadge.jsx  # Diaper type badge
+            │   ├── CustomTooltip.jsx # Chart tooltip
+            │   ├── Modal.jsx        # Modal + form primitives
+            │   └── forms/
+            │       ├── FeedingForm.jsx
+            │       ├── SleepForm.jsx
+            │       ├── DiaperForm.jsx
+            │       ├── TemperatureForm.jsx
+            │       ├── TummyTimeForm.jsx
+            │       └── NoteForm.jsx
+            └── utils/
+                ├── colors.js        # Color palette
+                └── formatters.js    # Date, time, and data formatting
 ```
 
 ## Configuration
