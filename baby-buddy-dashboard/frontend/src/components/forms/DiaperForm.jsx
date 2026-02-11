@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { api } from "../../api";
-import Modal, { FormField, FormSelect, FormButton } from "../Modal";
+import Modal, { FormField, FormSelect, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
 
 const COLORS = [
@@ -15,6 +15,7 @@ export default function DiaperForm({ childId, onDone, onClose, preset }) {
   const [wet, setWet] = useState(preset === "wet" || preset === "both");
   const [solid, setSolid] = useState(preset === "solid" || preset === "both");
   const [color, setColor] = useState("");
+  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -23,6 +24,7 @@ export default function DiaperForm({ childId, onDone, onClose, preset }) {
     try {
       const data = { child: childId, wet, solid };
       if (color) data.color = color;
+      if (notes.trim()) data.notes = notes.trim();
       await api.createChange(data);
       onDone();
     } catch {
@@ -64,6 +66,14 @@ export default function DiaperForm({ childId, onDone, onClose, preset }) {
             <FormSelect options={COLORS} value={color} onChange={(e) => setColor(e.target.value)} />
           </FormField>
         )}
+        <FormField label="Notes">
+          <FormInput
+            type="text"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Optional"
+          />
+        </FormField>
         <FormButton color={colors.diaper} disabled={saving || (!wet && !solid)}>
           {saving ? "Saving..." : "Save Change"}
         </FormButton>
