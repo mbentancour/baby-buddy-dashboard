@@ -1,0 +1,10 @@
+configuration:
+  baby_buddy_url:
+    name: Baby Buddy URL
+    description: "Full URL to your Baby Buddy instance (e.g., https://babybuddy.example.com)"
+  baby_buddy_api_key:
+    name: API Key
+    description: "Baby Buddy API token (found in Baby Buddy under Settings > API Key)"
+  refresh_interval:
+    name: Refresh Interval
+    description: "How often (in seconds) the dashboard polls for new data"

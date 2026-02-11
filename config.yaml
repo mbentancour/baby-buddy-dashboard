@@ -1,0 +1,25 @@
+name: "Baby Buddy Dashboard"
+version: "1.0.0"
+slug: "baby-buddy-dashboard"
+description: "Modern dashboard for Baby Buddy with charts, timers, and quick-log actions"
+url: "https://github.com/user/baby-buddy-dashboard"
+arch:
+  - amd64
+  - aarch64
+  - armv7
+  - armhf
+  - i386
+startup: application
+boot: auto
+ingress: true
+ingress_port: 8099
+panel_icon: "mdi:baby-face-outline"
+panel_title: "Baby Buddy"
+options:
+  baby_buddy_url: ""
+  baby_buddy_api_key: ""
+  refresh_interval: 30
+schema:
+  baby_buddy_url: url
+  baby_buddy_api_key: password
+  refresh_interval: "int(5,300)"

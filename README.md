@@ -1,0 +1,171 @@
+# Baby Buddy Dashboard
+
+A modern, responsive dashboard for [Baby Buddy](https://github.com/babybuddy/babybuddy), built as a Home Assistant add-on. Provides a clean interface for viewing and logging baby care activities - feedings, sleep, diaper changes, tummy time, temperature, growth, and more.
+
+![Stack](https://img.shields.io/badge/React-18-blue) ![Stack](https://img.shields.io/badge/FastAPI-Python-green) ![Stack](https://img.shields.io/badge/Home%20Assistant-Add--on-blue)
+
+## Features
+
+- **Overview dashboard** — daily stats, timelines, and charts for feedings, sleep, diapers, and tummy time
+- **Growth tracking** — weight, height, and temperature trends with line charts
+- **Quick logging** — floating action button to quickly log feedings, sleep, diaper changes, tummy time, temperature, and notes
+- **Active timers** — start/stop timers for ongoing activities (feeding, sleep, tummy time)
+- **Auto-refresh** — configurable polling interval keeps the dashboard up to date
+- **Dark theme** — designed for always-on displays and low-light nursery use
+- **Responsive** — works on desktop, tablet, and phone screens
+
+## Architecture
+
+```
+┌─────────────┐       ┌──────────────┐       ┌─────────────┐
+│  Browser    │──────▶│  FastAPI     │──────▶│ Baby Buddy  │
+│ (React SPA) │◀──────│  Backend     │◀──────│   API       │
+└─────────────┘       └──────────────┘       └─────────────┘
+     :5173                 :8099
+  (dev only)          (proxy + static)
+```
+
+- **Frontend** — React 18 + Vite, with Recharts for data visualization
+- **Backend** — FastAPI (Python) proxy server that authenticates with Baby Buddy's API and serves the React SPA
+- **Deployment** — Docker container as a Home Assistant add-on, or run locally for development
+
+The backend acts as an API proxy so the Baby Buddy API key stays server-side and is never exposed to the browser.
+
+## Home Assistant Add-on Installation
+
+1. Add this repository to your Home Assistant add-on store
+2. Install the **Baby Buddy Dashboard** add-on
+3. Configure the add-on with your Baby Buddy URL and API key:
+   - **Baby Buddy URL** — full URL to your instance (e.g., `http://192.168.1.100:8000`)
+   - **API Key** — found in Baby Buddy under *Settings > API Key*
+   - **Refresh Interval** — polling interval in seconds (default: 30)
+4. Start the add-on — the dashboard appears in the Home Assistant sidebar
+
+## Local Development
+
+### Prerequisites
+
+- Node.js (18+)
+- Python 3.10+
+- A running Baby Buddy instance
+
+### Setup
+
+1. Copy the example environment file and fill in your Baby Buddy connection details:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Then edit `.env`:
+
+   ```
+   BABY_BUDDY_URL=http://192.168.1.100:8000
+   BABY_BUDDY_API_KEY=your_api_key_here
+   REFRESH_INTERVAL=30
+   ```
+
+2. Run the development servers:
+
+   ```bash
+   ./run_local.sh
+   ```
+
+   This starts:
+   - **Backend** (FastAPI) on `http://localhost:8099` — proxies API requests to Baby Buddy
+   - **Frontend** (Vite dev server) on `http://localhost:5173` — hot-reloads on code changes
+
+3. Open `http://localhost:5173` in your browser
+
+The script auto-installs npm and pip dependencies on first run. Press `Ctrl+C` to stop both servers.
+
+> **Note:** `.env` is gitignored so your credentials are never committed.
+
+### Building for production
+
+```bash
+cd frontend
+npm run build
+```
+
+The built files are output to `frontend/dist/`.
+
+## Project Structure
+
+```
+baby-buddy-dashboard/
+├── backend/
+│   ├── server.py              # FastAPI app — API proxy + static file server
+│   └── requirements.txt       # Python dependencies
+├── frontend/
+│   ├── index.html             # Entry HTML
+│   ├── vite.config.js         # Vite config with API proxy for dev
+│   ├── package.json
+│   └── src/
+│       ├── main.jsx           # React entry point
+│       ├── App.jsx            # Main app shell — layout, tabs, modals, FAB
+│       ├── styles.css         # Global styles, CSS variables, animations
+│       ├── api.js             # API client for all Baby Buddy endpoints
+│       ├── hooks/
+│       │   ├── useBabyData.js # Fetches and polls all baby data
+│       │   └── useTimers.js   # Timer state management
+│       ├── tabs/
+│       │   ├── OverviewTab.jsx # Daily stats, timelines, and charts
+│       │   └── GrowthTab.jsx   # Weight, height, temperature trends
+│       ├── components/
+│       │   ├── Icons.jsx       # SVG icon components
+│       │   ├── StatCard.jsx    # Stat display card
+│       │   ├── SectionCard.jsx # Section container with header
+│       │   ├── TimelineItem.jsx # Timeline entry
+│       │   ├── TimerButton.jsx  # Timer start/stop button
+│       │   ├── DiaperBadge.jsx  # Diaper type badge
+│       │   ├── CustomTooltip.jsx # Chart tooltip
+│       │   ├── Modal.jsx        # Modal + form primitives
+│       │   └── forms/
+│       │       ├── FeedingForm.jsx
+│       │       ├── SleepForm.jsx
+│       │       ├── DiaperForm.jsx
+│       │       ├── TemperatureForm.jsx
+│       │       ├── TummyTimeForm.jsx
+│       │       └── NoteForm.jsx
+│       └── utils/
+│           ├── colors.js       # Color palette
+│           └── formatters.js   # Date, time, and data formatting
+├── .env.example               # Environment variable template
+├── .gitignore
+├── config.yaml                # Home Assistant add-on config
+├── build.yaml                 # Docker multi-arch build config
+├── Dockerfile
+├── run.sh                     # Production entry script (Home Assistant)
+├── run_local.sh               # Local development script (sources .env)
+└── translations/
+    └── en.yaml                # HA config UI labels
+```
+
+## Configuration
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| `baby_buddy_url` | Full URL to your Baby Buddy instance | — |
+| `baby_buddy_api_key` | Baby Buddy API token | — |
+| `refresh_interval` | Polling interval in seconds (5–300) | 30 |
+
+### Getting your API key
+
+1. Open your Baby Buddy instance
+2. Go to **Settings** (or `/user/settings/`)
+3. Find the **API Key** section
+4. Copy the token string
+
+## Baby Buddy API Notes
+
+This dashboard uses Baby Buddy's REST API. A few important details about the filter parameters:
+
+- Endpoints with `start`/`end` fields (feedings, sleep, tummy times) use `start_min`/`start_max` for date filtering
+- Endpoints with a `time` field (diaper changes, temperature) use `date_min`/`date_max`
+- All date filters expect **ISO 8601 datetime strings** (e.g., `2025-01-15T00:00:00`), not plain dates
+- Datetimes should be in **local time without a timezone suffix** so Baby Buddy interprets them in its configured timezone
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute it. See the LICENSE file for the full text.
