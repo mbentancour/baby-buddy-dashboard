@@ -1,5 +1,5 @@
 name: "Baby Buddy Dashboard"
-version: "1.0.0"
+version: "1.0.1"
 slug: "baby-buddy-dashboard"
 description: "Modern dashboard for Baby Buddy with charts, timers, and quick-log actions"
 url: "https://github.com/mbentancour/baby-buddy-dashboard"
