@@ -16,6 +16,7 @@ ingress: true
 ingress_port: 8099
 panel_icon: "mdi:baby-face-outline"
 panel_title: "Baby Buddy"
+panel_admin: false
 options:
   baby_buddy_url: ""
   baby_buddy_api_key: ""
