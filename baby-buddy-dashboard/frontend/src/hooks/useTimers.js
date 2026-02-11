@@ -57,5 +57,11 @@ export function useTimers(serverTimers, childId) {
     return timer;
   }, [activeTimer]);
 
-  return { activeTimer, elapsed, startTimer, stopTimer };
+  const discardTimer = useCallback(async () => {
+    if (!activeTimer) return;
+    await api.deleteTimer(activeTimer.id);
+    setActiveTimer(null);
+  }, [activeTimer]);
+
+  return { activeTimer, elapsed, startTimer, stopTimer, discardTimer };
 }

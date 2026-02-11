@@ -111,7 +111,7 @@ export default function App() {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <span className="timer-elapsed">{formatElapsed(timer.elapsed)}</span>
             <button
-              className="timer-stop-btn"
+              className="timer-save-btn"
               onClick={async () => {
                 const t = await timer.stopTimer();
                 if (t) {
@@ -119,7 +119,13 @@ export default function App() {
                 }
               }}
             >
-              Stop
+              Save
+            </button>
+            <button
+              className="timer-discard-btn"
+              onClick={() => timer.discardTimer()}
+            >
+              <Icons.X />
             </button>
           </div>
         </div>

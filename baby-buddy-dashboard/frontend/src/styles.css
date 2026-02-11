@@ -134,12 +134,12 @@ body {
   color: #F59E0B;
 }
 
-.timer-stop-btn {
+.timer-save-btn {
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1px solid #EF444440;
-  background: #EF444415;
-  color: #EF4444;
+  border: 1px solid #22C55E40;
+  background: #22C55E15;
+  color: #22C55E;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -147,7 +147,23 @@ body {
   transition: background 0.2s;
 }
 
-.timer-stop-btn:hover {
+.timer-save-btn:hover {
+  background: #22C55E25;
+}
+
+.timer-discard-btn {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 8px;
+  border: 1px solid #EF444440;
+  background: #EF444415;
+  color: #EF4444;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.timer-discard-btn:hover {
   background: #EF444425;
 }
 
