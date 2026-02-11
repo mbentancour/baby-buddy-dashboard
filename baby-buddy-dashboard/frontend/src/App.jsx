@@ -29,12 +29,27 @@ const QUICK_ACTIONS = [
   { id: "note", label: "Note", icon: <Icons.Heart />, color: "#EC4899" },
 ];
 
+const TIMER_TYPES = [
+  { id: "feeding", label: "Feeding", icon: <Icons.Bottle />, color: colors.feeding },
+  { id: "sleep", label: "Sleep", icon: <Icons.Moon />, color: colors.sleep },
+  { id: "tummy", label: "Tummy Time", icon: <Icons.Sun />, color: colors.tummy },
+];
+
+function timerNameToType(name) {
+  if (!name) return "feeding";
+  const n = name.toLowerCase();
+  if (n.includes("sleep")) return "sleep";
+  if (n.includes("tummy")) return "tummy";
+  return "feeding";
+}
+
 export default function App() {
   const data = useBabyData();
   const timer = useTimers(data.timers, data.child?.id);
   const [activeTab, setActiveTab] = useState("overview");
   const [modal, setModal] = useState(null);
   const [showActions, setShowActions] = useState(false);
+  const [showTimerPicker, setShowTimerPicker] = useState(false);
 
   const closeModal = () => setModal(null);
   const handleFormDone = () => {
@@ -100,7 +115,7 @@ export default function App() {
               onClick={async () => {
                 const t = await timer.stopTimer();
                 if (t) {
-                  setModal({ type: "feeding", timerId: t.id });
+                  setModal({ type: timerNameToType(t.name), timerId: t.id });
                 }
               }}
             >
@@ -170,18 +185,45 @@ export default function App() {
           </div>
         )}
         {!timer.activeTimer && (
-          <TimerButton
-            label="Timer"
-            icon={<Icons.Timer />}
-            color={colors.feeding}
-            active={false}
-            onClick={() => timer.startTimer("feeding")}
-          />
+          <>
+            {showTimerPicker && (
+              <div className="fab-menu fade-in" style={{ right: 76 }}>
+                {TIMER_TYPES.map((t) => (
+                  <button
+                    key={t.id}
+                    className="fab-action"
+                    onClick={() => {
+                      timer.startTimer(t.id);
+                      setShowTimerPicker(false);
+                    }}
+                  >
+                    <span
+                      className="fab-action-icon"
+                      style={{ background: `${t.color}18`, color: t.color }}
+                    >
+                      {t.icon}
+                    </span>
+                    <span className="fab-action-label">{t.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <TimerButton
+              label="Timer"
+              icon={<Icons.Timer />}
+              color={colors.feeding}
+              active={false}
+              onClick={() => {
+                setShowTimerPicker(!showTimerPicker);
+                setShowActions(false);
+              }}
+            />
+          </>
         )}
         <button
           className="fab-btn"
           style={{ background: showActions ? "var(--text-muted)" : colors.feeding }}
-          onClick={() => setShowActions(!showActions)}
+          onClick={() => { setShowActions(!showActions); setShowTimerPicker(false); }}
         >
           <span style={{ transform: showActions ? "rotate(45deg)" : "none", transition: "transform 0.2s", display: "flex" }}>
             <Icons.Plus />

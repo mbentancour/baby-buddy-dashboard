@@ -51,7 +51,8 @@ export function useTimers(serverTimers, childId) {
   const stopTimer = useCallback(async () => {
     if (!activeTimer) return null;
     const timer = { ...activeTimer };
-    await api.deleteTimer(timer.id);
+    // Don't delete — Baby Buddy auto-deletes timers when used in a creation call.
+    // If the user cancels the form, the timer stays and reappears on next sync.
     setActiveTimer(null);
     return timer;
   }, [activeTimer]);
