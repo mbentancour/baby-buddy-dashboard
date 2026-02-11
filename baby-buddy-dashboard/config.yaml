@@ -2,7 +2,8 @@ name: "Baby Buddy Dashboard"
 version: "1.0.0"
 slug: "baby-buddy-dashboard"
 description: "Modern dashboard for Baby Buddy with charts, timers, and quick-log actions"
-url: "https://github.com/user/baby-buddy-dashboard"
+url: "https://github.com/mbentancour/baby-buddy-dashboard"
+init: false
 arch:
   - amd64
   - aarch64
