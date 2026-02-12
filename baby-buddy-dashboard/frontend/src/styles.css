@@ -60,6 +60,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .baby-name {
@@ -165,6 +171,17 @@ body {
 
 .timer-discard-btn:hover {
   background: #EF444425;
+}
+
+/* Clickable entries */
+.entry-clickable {
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+
+.entry-clickable:hover {
+  background: #ffffff08;
 }
 
 /* Tab navigation */

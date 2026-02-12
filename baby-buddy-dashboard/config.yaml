@@ -1,7 +1,9 @@
 name: "Baby Buddy Dashboard"
-version: "1.0.2"
+version: "1.0.3"
 slug: "baby-buddy-dashboard"
-description: "Modern dashboard for Baby Buddy with charts, timers, and quick-log actions"
+description: "Modern dashboard for Baby Buddy with charts, timers, and quick-log actions.
+              Supports running as a standalone web app or as a Home Assistant add-on.
+              It connects to your Baby Buddy instance using its API and provides a user-friendly interface to track your baby's activities and milestones."
 url: "https://github.com/mbentancour/baby-buddy-dashboard"
 init: false
 arch:
@@ -15,7 +17,7 @@ boot: auto
 ingress: true
 ingress_port: 8099
 panel_icon: "mdi:baby-face-outline"
-panel_title: "Baby Buddy"
+panel_title: "Baby Dashboard"
 panel_admin: false
 options:
   baby_buddy_url: ""

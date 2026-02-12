@@ -12,6 +12,8 @@ import DiaperForm from "./components/forms/DiaperForm";
 import TemperatureForm from "./components/forms/TemperatureForm";
 import TummyTimeForm from "./components/forms/TummyTimeForm";
 import NoteForm from "./components/forms/NoteForm";
+import WeightForm from "./components/forms/WeightForm";
+import HeightForm from "./components/forms/HeightForm";
 import TimerButton from "./components/TimerButton";
 import "./styles.css";
 
@@ -26,6 +28,8 @@ const QUICK_ACTIONS = [
   { id: "diaper", label: "Diaper", icon: <Icons.Droplet />, color: colors.diaper },
   { id: "tummy", label: "Tummy", icon: <Icons.Sun />, color: colors.tummy },
   { id: "temp", label: "Temp", icon: <Icons.Temp />, color: colors.temp },
+  { id: "weight", label: "Weight", icon: <Icons.Weight />, color: colors.growth },
+  { id: "height", label: "Height", icon: <Icons.Ruler />, color: colors.height },
   { id: "note", label: "Note", icon: <Icons.Heart />, color: "#EC4899" },
 ];
 
@@ -72,7 +76,11 @@ export default function App() {
       <header className="app-header fade-in">
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <div className="avatar">
-            <Icons.Baby />
+            {data.child?.picture ? (
+              <img src={data.child.picture} alt={data.child.first_name} className="avatar-img" />
+            ) : (
+              <Icons.Baby />
+            )}
           </div>
           <div>
             <h1 className="baby-name">
@@ -152,9 +160,11 @@ export default function App() {
             feedings={data.feedings}
             weeklyFeedings={data.weeklyFeedings}
             sleepEntries={data.sleepEntries}
+            weeklySleep={data.weeklySleep}
             changes={data.changes}
             tummyTimes={data.tummyTimes}
             weeklyTummyTimes={data.weeklyTummyTimes}
+            onEditEntry={(type, entry) => setModal({ type, entry })}
           />
         )}
         {activeTab === "growth" && (
@@ -242,6 +252,7 @@ export default function App() {
         <FeedingForm
           childId={data.child?.id}
           timerId={modal.timerId}
+          entry={modal.entry}
           onDone={handleFormDone}
           onClose={closeModal}
         />
@@ -250,6 +261,7 @@ export default function App() {
         <SleepForm
           childId={data.child?.id}
           timerId={modal.timerId}
+          entry={modal.entry}
           onDone={handleFormDone}
           onClose={closeModal}
         />
@@ -257,6 +269,7 @@ export default function App() {
       {modal?.type === "diaper" && (
         <DiaperForm
           childId={data.child?.id}
+          entry={modal.entry}
           onDone={handleFormDone}
           onClose={closeModal}
         />
@@ -264,6 +277,7 @@ export default function App() {
       {modal?.type === "temp" && (
         <TemperatureForm
           childId={data.child?.id}
+          entry={modal.entry}
           onDone={handleFormDone}
           onClose={closeModal}
         />
@@ -272,6 +286,23 @@ export default function App() {
         <TummyTimeForm
           childId={data.child?.id}
           timerId={modal.timerId}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "weight" && (
+        <WeightForm
+          childId={data.child?.id}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "height" && (
+        <HeightForm
+          childId={data.child?.id}
+          entry={modal.entry}
           onDone={handleFormDone}
           onClose={closeModal}
         />

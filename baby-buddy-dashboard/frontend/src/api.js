@@ -35,36 +35,50 @@ export const api = {
   getFeedings: (params) => request(`feedings/${qs(params)}`),
   createFeeding: (data) =>
     request("feedings/", { method: "POST", body: JSON.stringify(data) }),
+  updateFeeding: (id, data) =>
+    request(`feedings/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Sleep
   getSleep: (params) => request(`sleep/${qs(params)}`),
   createSleep: (data) =>
     request("sleep/", { method: "POST", body: JSON.stringify(data) }),
+  updateSleep: (id, data) =>
+    request(`sleep/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Diapers (changes)
   getChanges: (params) => request(`changes/${qs(params)}`),
   createChange: (data) =>
     request("changes/", { method: "POST", body: JSON.stringify(data) }),
+  updateChange: (id, data) =>
+    request(`changes/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Tummy time
   getTummyTimes: (params) => request(`tummy-times/${qs(params)}`),
   createTummyTime: (data) =>
     request("tummy-times/", { method: "POST", body: JSON.stringify(data) }),
+  updateTummyTime: (id, data) =>
+    request(`tummy-times/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Temperature
   getTemperature: (params) => request(`temperature/${qs(params)}`),
   createTemperature: (data) =>
     request("temperature/", { method: "POST", body: JSON.stringify(data) }),
+  updateTemperature: (id, data) =>
+    request(`temperature/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Weight
   getWeight: (params) => request(`weight/${qs(params)}`),
   createWeight: (data) =>
     request("weight/", { method: "POST", body: JSON.stringify(data) }),
+  updateWeight: (id, data) =>
+    request(`weight/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Height
   getHeight: (params) => request(`height/${qs(params)}`),
   createHeight: (data) =>
     request("height/", { method: "POST", body: JSON.stringify(data) }),
+  updateHeight: (id, data) =>
+    request(`height/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Pumping
   getPumping: (params) => request(`pumping/${qs(params)}`),

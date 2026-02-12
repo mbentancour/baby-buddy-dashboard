@@ -11,21 +11,27 @@ const COLORS = [
   { value: "yellow", label: "Yellow" },
 ];
 
-export default function DiaperForm({ childId, onDone, onClose, preset }) {
-  const [wet, setWet] = useState(preset === "wet" || preset === "both");
-  const [solid, setSolid] = useState(preset === "solid" || preset === "both");
-  const [color, setColor] = useState("");
-  const [notes, setNotes] = useState("");
+export default function DiaperForm({ childId, entry, onDone, onClose, preset }) {
+  const isEdit = !!entry;
+  const [wet, setWet] = useState(entry ? entry.wet : (preset === "wet" || preset === "both"));
+  const [solid, setSolid] = useState(entry ? entry.solid : (preset === "solid" || preset === "both"));
+  const [color, setColor] = useState(entry?.color || "");
+  const [notes, setNotes] = useState(entry?.notes || "");
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const data = { child: childId, wet, solid };
+      const data = { wet, solid };
       if (color) data.color = color;
       if (notes.trim()) data.notes = notes.trim();
-      await api.createChange(data);
+      if (isEdit) {
+        await api.updateChange(entry.id, data);
+      } else {
+        data.child = childId;
+        await api.createChange(data);
+      }
       onDone();
     } catch {
       setSaving(false);
@@ -33,7 +39,7 @@ export default function DiaperForm({ childId, onDone, onClose, preset }) {
   };
 
   return (
-    <Modal title="Log Diaper Change" onClose={onClose}>
+    <Modal title={isEdit ? "Edit Diaper Change" : "Log Diaper Change"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
           {[
@@ -75,7 +81,7 @@ export default function DiaperForm({ childId, onDone, onClose, preset }) {
           />
         </FormField>
         <FormButton color={colors.diaper} disabled={saving || (!wet && !solid)}>
-          {saving ? "Saving..." : "Save Change"}
+          {saving ? "Saving..." : isEdit ? "Update Change" : "Save Change"}
         </FormButton>
       </form>
     </Modal>

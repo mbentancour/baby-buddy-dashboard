@@ -11,6 +11,7 @@ export function useBabyData() {
   const [feedings, setFeedings] = useState([]);
   const [weeklyFeedings, setWeeklyFeedings] = useState([]);
   const [sleepEntries, setSleepEntries] = useState([]);
+  const [weeklySleep, setWeeklySleep] = useState([]);
   const [changes, setChanges] = useState([]);
   const [tummyTimes, setTummyTimes] = useState([]);
   const [weeklyTummyTimes, setWeeklyTummyTimes] = useState([]);
@@ -46,6 +47,7 @@ export function useBabyData() {
         feedingsRes,
         weeklyFeedingsRes,
         sleepRes,
+        weeklySleepRes,
         changesRes,
         tummyRes,
         weeklyTummyRes,
@@ -58,6 +60,7 @@ export function useBabyData() {
         api.getFeedings({ start_min: todayMin, start_max: todayMax, limit: 100, ordering: "-start" }),
         api.getFeedings({ start_min: weekMin, limit: 200, ordering: "-start" }),
         api.getSleep({ start_min: sleepMin, limit: 100, ordering: "-start" }),
+        api.getSleep({ start_min: weekMin, limit: 200, ordering: "-start" }),
         api.getChanges({ date_min: todayMin, date_max: todayMax, limit: 100, ordering: "-time" }),
         api.getTummyTimes({ start_min: todayMin, start_max: todayMax, limit: 100, ordering: "-start" }),
         api.getTummyTimes({ start_min: weekMin, limit: 200, ordering: "-start" }),
@@ -71,6 +74,7 @@ export function useBabyData() {
       setFeedings(feedingsRes.results || []);
       setWeeklyFeedings(weeklyFeedingsRes.results || []);
       setSleepEntries(sleepRes.results || []);
+      setWeeklySleep(weeklySleepRes.results || []);
       setChanges(changesRes.results || []);
       setTummyTimes(tummyRes.results || []);
       setWeeklyTummyTimes(weeklyTummyRes.results || []);
@@ -108,6 +112,7 @@ export function useBabyData() {
     feedings,
     weeklyFeedings,
     sleepEntries,
+    weeklySleep,
     changes,
     tummyTimes,
     weeklyTummyTimes,

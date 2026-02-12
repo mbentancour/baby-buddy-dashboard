@@ -24,29 +24,37 @@ function toLocalDatetime(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export default function FeedingForm({ childId, timerId, onDone, onClose }) {
+export default function FeedingForm({ childId, timerId, entry, onDone, onClose }) {
+  const isEdit = !!entry;
   const now = new Date();
   const fifteenMinsAgo = new Date(now.getTime() - 15 * 60 * 1000);
-  const [type, setType] = useState("breast milk");
-  const [method, setMethod] = useState("bottle");
-  const [amount, setAmount] = useState("");
-  const [start, setStart] = useState(toLocalDatetime(fifteenMinsAgo));
-  const [end, setEnd] = useState(toLocalDatetime(now));
+  const [type, setType] = useState(entry?.type || "breast milk");
+  const [method, setMethod] = useState(entry?.method || "bottle");
+  const [amount, setAmount] = useState(entry?.amount != null ? String(entry.amount) : "");
+  const [start, setStart] = useState(entry?.start ? toLocalDatetime(new Date(entry.start)) : toLocalDatetime(fifteenMinsAgo));
+  const [end, setEnd] = useState(entry?.end ? toLocalDatetime(new Date(entry.end)) : toLocalDatetime(now));
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const data = { child: childId, type, method };
+      const data = { type, method };
       if (amount) data.amount = parseFloat(amount);
-      if (timerId) {
-        data.timer = timerId;
-      } else {
+      if (isEdit) {
         data.start = `${start}:00`;
         data.end = `${end}:00`;
+        await api.updateFeeding(entry.id, data);
+      } else {
+        data.child = childId;
+        if (timerId) {
+          data.timer = timerId;
+        } else {
+          data.start = `${start}:00`;
+          data.end = `${end}:00`;
+        }
+        await api.createFeeding(data);
       }
-      await api.createFeeding(data);
       onDone();
     } catch {
       setSaving(false);
@@ -54,7 +62,7 @@ export default function FeedingForm({ childId, timerId, onDone, onClose }) {
   };
 
   return (
-    <Modal title="Log Feeding" onClose={onClose}>
+    <Modal title={isEdit ? "Edit Feeding" : "Log Feeding"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <FormField label="Type">
           <FormSelect options={TYPES} value={type} onChange={(e) => setType(e.target.value)} />
@@ -65,7 +73,7 @@ export default function FeedingForm({ childId, timerId, onDone, onClose }) {
         <FormField label="Amount (mL)">
           <FormInput type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Optional" min="0" step="5" />
         </FormField>
-        {!timerId && (
+        {(isEdit || !timerId) && (
           <>
             <FormField label="Start">
               <FormInput
@@ -86,7 +94,7 @@ export default function FeedingForm({ childId, timerId, onDone, onClose }) {
           </>
         )}
         <FormButton color={colors.feeding} disabled={saving}>
-          {saving ? "Saving..." : "Save Feeding"}
+          {saving ? "Saving..." : isEdit ? "Update Feeding" : "Save Feeding"}
         </FormButton>
       </form>
     </Modal>

@@ -59,6 +59,7 @@ export function toFeedingTimeline(feedings) {
     amount: f.amount || 0,
     type: f.type,
     method: f.method,
+    entry: f,
   }));
 }
 
@@ -68,6 +69,7 @@ export function toDiaperTimeline(changes) {
     type: c.solid && c.wet ? "both" : c.solid ? "solid" : "wet",
     ago: timeAgo(c.time),
     color: c.color,
+    entry: c,
   }));
 }
 
@@ -77,6 +79,7 @@ export function toSleepBlocks(sleepEntries) {
     end: s.end ? formatTime(s.end) : "ongoing",
     duration: parseDuration(s.duration),
     nap: s.nap,
+    entry: s,
   }));
 }
 
@@ -93,22 +96,55 @@ export function toGrowthSeries(entries, valueKey) {
     }));
 }
 
+function getLast7Days() {
+  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const result = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    result.push({
+      label: dayNames[d.getDay()],
+      dateStr: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+    });
+  }
+  return result;
+}
+
+function entryDateStr(dateVal) {
+  const d = new Date(dateVal);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export function aggregateByDayOfWeek(entries, valueKey, dateKey = "start") {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const sums = Array(7).fill(0);
+  const days = getLast7Days();
+  const sums = {};
+  days.forEach((d) => (sums[d.dateStr] = 0));
   entries.forEach((e) => {
-    const d = new Date(e[dateKey] || e.time || e.date).getDay();
-    sums[d] += parseFloat(e[valueKey] || 0);
+    const key = entryDateStr(e[dateKey] || e.time || e.date);
+    if (key in sums) sums[key] += parseFloat(e[valueKey] || 0);
   });
-  return days.map((day, i) => ({ day, amount: Math.round(sums[i]) }));
+  return days.map((d) => ({ day: d.label, amount: Math.round(sums[d.dateStr]) }));
+}
+
+export function aggregateSleepByDay(entries) {
+  const days = getLast7Days();
+  const sums = {};
+  days.forEach((d) => (sums[d.dateStr] = 0));
+  entries.forEach((e) => {
+    const key = entryDateStr(e.start);
+    if (key in sums) sums[key] += parseDuration(e.duration);
+  });
+  return days.map((d) => ({ day: d.label, hours: Math.round(sums[d.dateStr] * 10) / 10 }));
 }
 
 export function aggregateTummyByDay(entries) {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const totals = Array(7).fill(0);
+  const days = getLast7Days();
+  const sums = {};
+  days.forEach((d) => (sums[d.dateStr] = 0));
   entries.forEach((e) => {
-    const d = new Date(e.start).getDay();
-    totals[d] += parseDuration(e.duration) * 60;
+    const key = entryDateStr(e.start);
+    if (key in sums) sums[key] += parseDuration(e.duration) * 60;
   });
-  return days.map((day, i) => ({ day, minutes: Math.round(totals[i]) }));
+  return days.map((d) => ({ day: d.label, minutes: Math.round(sums[d.dateStr]) }));
 }

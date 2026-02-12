@@ -8,25 +8,33 @@ function toLocalDatetime(date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export default function SleepForm({ childId, timerId, onDone, onClose }) {
+export default function SleepForm({ childId, timerId, entry, onDone, onClose }) {
+  const isEdit = !!entry;
   const now = new Date();
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
-  const [start, setStart] = useState(toLocalDatetime(oneHourAgo));
-  const [end, setEnd] = useState(toLocalDatetime(now));
+  const [start, setStart] = useState(entry?.start ? toLocalDatetime(new Date(entry.start)) : toLocalDatetime(oneHourAgo));
+  const [end, setEnd] = useState(entry?.end ? toLocalDatetime(new Date(entry.end)) : toLocalDatetime(now));
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const data = { child: childId };
-      if (timerId) {
-        data.timer = timerId;
+      if (isEdit) {
+        await api.updateSleep(entry.id, {
+          start: `${start}:00`,
+          end: `${end}:00`,
+        });
       } else {
-        data.start = `${start}:00`;
-        data.end = `${end}:00`;
+        const data = { child: childId };
+        if (timerId) {
+          data.timer = timerId;
+        } else {
+          data.start = `${start}:00`;
+          data.end = `${end}:00`;
+        }
+        await api.createSleep(data);
       }
-      await api.createSleep(data);
       onDone();
     } catch {
       setSaving(false);
@@ -34,9 +42,9 @@ export default function SleepForm({ childId, timerId, onDone, onClose }) {
   };
 
   return (
-    <Modal title="Log Sleep" onClose={onClose}>
+    <Modal title={isEdit ? "Edit Sleep" : "Log Sleep"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        {timerId ? (
+        {!isEdit && timerId ? (
           <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>
             The timer's start and end times will be used for this sleep entry.
           </p>
@@ -61,7 +69,7 @@ export default function SleepForm({ childId, timerId, onDone, onClose }) {
           </>
         )}
         <FormButton color={colors.sleep} disabled={saving}>
-          {saving ? "Saving..." : "Save Sleep"}
+          {saving ? "Saving..." : isEdit ? "Update Sleep" : "Save Sleep"}
         </FormButton>
       </form>
     </Modal>

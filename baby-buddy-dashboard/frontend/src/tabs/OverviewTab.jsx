@@ -21,15 +21,17 @@ import {
   toDiaperTimeline,
   toSleepBlocks,
   aggregateByDayOfWeek,
+  aggregateSleepByDay,
   aggregateTummyByDay,
   parseDuration,
 } from "../utils/formatters";
 
-export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRaw, sleepEntries, changes, tummyTimes, weeklyTummyTimes }) {
+export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRaw, sleepEntries, weeklySleep, changes, tummyTimes, weeklyTummyTimes, onEditEntry }) {
   const feedingTimeline = toFeedingTimeline(feedings);
   const diaperTimeline = toDiaperTimeline(changes);
   const sleepBlocks = toSleepBlocks(sleepEntries);
   const weeklyFeedings = aggregateByDayOfWeek(weeklyFeedingsRaw, "amount");
+  const sleepByDay = aggregateSleepByDay(weeklySleep);
   const tummyByDay = aggregateTummyByDay(weeklyTummyTimes);
 
   const totalFeeding = feedings.reduce((s, f) => s + (f.amount || 0), 0);
@@ -111,14 +113,15 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
             {feedingTimeline.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column" }}>
                 {feedingTimeline.map((f, i) => (
-                  <TimelineItem
-                    key={i}
-                    time={f.time}
-                    label={f.label}
-                    detail={f.detail}
-                    color={colors.feeding}
-                    isLast={i === feedingTimeline.length - 1}
-                  />
+                  <div key={i} className="entry-clickable" onClick={() => onEditEntry?.("feeding", f.entry)}>
+                    <TimelineItem
+                      time={f.time}
+                      label={f.label}
+                      detail={f.detail}
+                      color={colors.feeding}
+                      isLast={i === feedingTimeline.length - 1}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (
@@ -146,42 +149,35 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
         <div className="fade-in fade-in-4">
           <SectionCard title="Sleep Pattern" icon={<Icons.Moon />} color={colors.sleep}>
             {sleepBlocks.length > 0 ? (
-              <>
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {sleepBlocks.map((s, i) => (
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {sleepBlocks.map((s, i) => (
+                  <div key={i} className="entry-clickable" onClick={() => onEditEntry?.("sleep", s.entry)}>
                     <TimelineItem
-                      key={i}
                       time={`${s.start}–${s.end}`}
                       label={`${s.duration.toFixed(1)}h${s.nap ? " · Nap" : ""}`}
                       detail={`${s.start} to ${s.end}`}
                       color={colors.sleep}
                       isLast={i === sleepBlocks.length - 1}
                     />
-                  ))}
-                </div>
-                {sleepBlocks.length >= 2 && (
-                  <div style={{ marginTop: 16, height: 120 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={sleepBlocks.map((s) => ({
-                          label: s.start,
-                          hours: parseFloat(s.duration.toFixed(1)),
-                        }))}
-                        barSize={22}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                        <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
-                        <YAxis hide />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Bar dataKey="hours" fill={colors.sleep} radius={[6, 6, 0, 0]} opacity={0.85} />
-                      </BarChart>
-                    </ResponsiveContainer>
                   </div>
-                )}
-              </>
+                ))}
+              </div>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 20 }}>
                 No sleep recorded
+              </div>
+            )}
+            {sleepByDay.some((d) => d.hours > 0) && (
+              <div style={{ marginTop: 16, height: 120 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={sleepByDay} barSize={18}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                    <YAxis hide />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="hours" fill={colors.sleep} radius={[6, 6, 0, 0]} opacity={0.85} />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             )}
           </SectionCard>
@@ -196,6 +192,8 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
                   {diaperTimeline.map((d, i) => (
                     <div
                       key={i}
+                      className="entry-clickable"
+                      onClick={() => onEditEntry?.("diaper", d.entry)}
                       style={{
                         display: "flex",
                         alignItems: "center",
