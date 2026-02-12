@@ -101,6 +101,28 @@ async def proxy_baby_buddy(path: str, request: Request):
     )
 
 
+@app.get("/api/media/{path:path}")
+async def proxy_media(path: str):
+    """Proxy media files (e.g. child photos) from Baby Buddy."""
+    try:
+        response = await http_client.get(
+            f"/{path}",
+            headers={"Accept": "*/*"},
+        )
+    except httpx.ConnectError:
+        raise HTTPException(502, "Cannot connect to Baby Buddy")
+    except httpx.TimeoutException:
+        raise HTTPException(504, "Baby Buddy request timed out")
+
+    if response.status_code != 200:
+        raise HTTPException(response.status_code, "Media not found")
+
+    return Response(
+        content=response.content,
+        headers={"Content-Type": response.headers.get("content-type", "application/octet-stream")},
+    )
+
+
 # --- Static files (React SPA) ---
 
 if STATIC_DIR.exists():

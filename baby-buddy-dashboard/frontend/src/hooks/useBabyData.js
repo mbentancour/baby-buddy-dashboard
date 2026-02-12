@@ -70,7 +70,16 @@ export function useBabyData() {
         api.getTimers(),
       ]);
 
-      setChild(childrenRes.results?.[0] || null);
+      const firstChild = childrenRes.results?.[0] || null;
+      if (firstChild?.picture) {
+        try {
+          const url = new URL(firstChild.picture);
+          firstChild.picture = `./api/media${url.pathname}`;
+        } catch {
+          // leave as-is if not a valid URL
+        }
+      }
+      setChild(firstChild);
       setFeedings(feedingsRes.results || []);
       setWeeklyFeedings(weeklyFeedingsRes.results || []);
       setSleepEntries(sleepRes.results || []);
