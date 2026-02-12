@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   BarChart,
   Bar,
@@ -26,7 +27,12 @@ import {
   parseDuration,
 } from "../utils/formatters";
 
+const COLLAPSED_COUNT = 2;
+
 export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRaw, sleepEntries, weeklySleep, changes, tummyTimes, weeklyTummyTimes, onEditEntry }) {
+  const [expanded, setExpanded] = useState({});
+  const toggle = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+
   const feedingTimeline = toFeedingTimeline(feedings);
   const diaperTimeline = toDiaperTimeline(changes);
   const sleepBlocks = toSleepBlocks(sleepEntries);
@@ -112,17 +118,22 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
           <SectionCard title="Recent Feedings" icon={<Icons.Bottle />} color={colors.feeding}>
             {feedingTimeline.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column" }}>
-                {feedingTimeline.map((f, i) => (
+                {(expanded.feedings ? feedingTimeline : feedingTimeline.slice(0, COLLAPSED_COUNT)).map((f, i, arr) => (
                   <div key={i} className="entry-clickable" onClick={() => onEditEntry?.("feeding", f.entry)}>
                     <TimelineItem
                       time={f.time}
                       label={f.label}
                       detail={f.detail}
                       color={colors.feeding}
-                      isLast={i === feedingTimeline.length - 1}
+                      isLast={i === arr.length - 1}
                     />
                   </div>
                 ))}
+                {feedingTimeline.length > COLLAPSED_COUNT && (
+                  <button className="expand-toggle" onClick={() => toggle("feedings")}>
+                    {expanded.feedings ? "Show less" : `Show ${feedingTimeline.length - COLLAPSED_COUNT} more`}
+                  </button>
+                )}
               </div>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 20 }}>
@@ -150,17 +161,22 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
           <SectionCard title="Sleep Pattern" icon={<Icons.Moon />} color={colors.sleep}>
             {sleepBlocks.length > 0 ? (
               <div style={{ display: "flex", flexDirection: "column" }}>
-                {sleepBlocks.map((s, i) => (
+                {(expanded.sleep ? sleepBlocks : sleepBlocks.slice(0, COLLAPSED_COUNT)).map((s, i, arr) => (
                   <div key={i} className="entry-clickable" onClick={() => onEditEntry?.("sleep", s.entry)}>
                     <TimelineItem
                       time={`${s.start}–${s.end}`}
                       label={`${s.duration.toFixed(1)}h${s.nap ? " · Nap" : ""}`}
                       detail={`${s.start} to ${s.end}`}
                       color={colors.sleep}
-                      isLast={i === sleepBlocks.length - 1}
+                      isLast={i === arr.length - 1}
                     />
                   </div>
                 ))}
+                {sleepBlocks.length > COLLAPSED_COUNT && (
+                  <button className="expand-toggle" onClick={() => toggle("sleep")}>
+                    {expanded.sleep ? "Show less" : `Show ${sleepBlocks.length - COLLAPSED_COUNT} more`}
+                  </button>
+                )}
               </div>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 20 }}>
@@ -189,7 +205,7 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
             {diaperTimeline.length > 0 ? (
               <>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {diaperTimeline.map((d, i) => (
+                  {(expanded.diapers ? diaperTimeline : diaperTimeline.slice(0, COLLAPSED_COUNT)).map((d, i) => (
                     <div
                       key={i}
                       className="entry-clickable"
@@ -212,6 +228,11 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
                       </span>
                     </div>
                   ))}
+                  {diaperTimeline.length > COLLAPSED_COUNT && (
+                    <button className="expand-toggle" onClick={() => toggle("diapers")}>
+                      {expanded.diapers ? "Show less" : `Show ${diaperTimeline.length - COLLAPSED_COUNT} more`}
+                    </button>
+                  )}
                 </div>
                 <div
                   style={{
