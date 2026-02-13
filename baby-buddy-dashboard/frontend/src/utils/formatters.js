@@ -148,3 +148,40 @@ export function aggregateTummyByDay(entries) {
   });
   return days.map((d) => ({ day: d.label, minutes: Math.round(sums[d.dateStr]) }));
 }
+
+function getLastNDays(n) {
+  const result = [];
+  const now = new Date();
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const month = d.toLocaleDateString([], { month: "short", day: "numeric" });
+    result.push({
+      label: month,
+      dateStr: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+    });
+  }
+  return result;
+}
+
+export function dailyFeedingTotals(entries, numDays = 30) {
+  const days = getLastNDays(numDays);
+  const sums = {};
+  days.forEach((d) => (sums[d.dateStr] = 0));
+  entries.forEach((e) => {
+    const key = entryDateStr(e.start || e.time || e.date);
+    if (key in sums) sums[key] += parseFloat(e.amount || 0);
+  });
+  return days.map((d) => ({ date: d.label, amount: Math.round(sums[d.dateStr]) }));
+}
+
+export function dailySleepTotals(entries, numDays = 30) {
+  const days = getLastNDays(numDays);
+  const sums = {};
+  days.forEach((d) => (sums[d.dateStr] = 0));
+  entries.forEach((e) => {
+    const key = entryDateStr(e.start);
+    if (key in sums) sums[key] += parseDuration(e.duration);
+  });
+  return days.map((d) => ({ date: d.label, hours: Math.round(sums[d.dateStr] * 10) / 10 }));
+}

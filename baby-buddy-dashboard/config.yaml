@@ -23,7 +23,9 @@ options:
   baby_buddy_url: ""
   baby_buddy_api_key: ""
   refresh_interval: 30
+  demo_mode: false
 schema:
   baby_buddy_url: url
   baby_buddy_api_key: password
   refresh_interval: "int(5,300)"
+  demo_mode: bool

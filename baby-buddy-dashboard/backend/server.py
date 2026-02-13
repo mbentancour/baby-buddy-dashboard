@@ -13,6 +13,7 @@ import httpx
 BABY_BUDDY_URL = os.environ.get("BABY_BUDDY_URL", "").rstrip("/")
 BABY_BUDDY_API_KEY = os.environ.get("BABY_BUDDY_API_KEY", "")
 REFRESH_INTERVAL = int(os.environ.get("REFRESH_INTERVAL", "30"))
+DEMO_MODE = os.environ.get("DEMO_MODE", "").lower() in ("true", "1", "yes")
 
 # Fallback: read from HA add-on options.json
 if not BABY_BUDDY_URL:
@@ -22,6 +23,7 @@ if not BABY_BUDDY_URL:
         BABY_BUDDY_URL = opts.get("baby_buddy_url", "").rstrip("/")
         BABY_BUDDY_API_KEY = opts.get("baby_buddy_api_key", "")
         REFRESH_INTERVAL = opts.get("refresh_interval", 30)
+        DEMO_MODE = DEMO_MODE or opts.get("demo_mode", False)
 
 STATIC_DIR = Path(__file__).parent.parent / "static"
 
@@ -53,7 +55,7 @@ app = FastAPI(lifespan=lifespan)
 
 @app.get("/api/config")
 async def get_config():
-    return {"refresh_interval": REFRESH_INTERVAL}
+    return {"refresh_interval": REFRESH_INTERVAL, "demo_mode": DEMO_MODE}
 
 
 @app.api_route(

@@ -187,7 +187,8 @@ export default function App() {
           <GrowthTab
             weights={data.weights}
             heights={data.heights}
-            temperatures={data.temperatures}
+            monthlyFeedings={data.monthlyFeedings}
+            monthlySleep={data.monthlySleep}
           />
         )}
       </main>
