@@ -172,7 +172,9 @@ export function dailyFeedingTotals(entries, numDays = 30) {
     const key = entryDateStr(e.start || e.time || e.date);
     if (key in sums) sums[key] += parseFloat(e.amount || 0);
   });
-  return days.map((d) => ({ date: d.label, amount: Math.round(sums[d.dateStr]) }));
+  const result = days.map((d) => ({ date: d.label, amount: Math.round(sums[d.dateStr]) }));
+  const firstNonZero = result.findIndex((d) => d.amount > 0);
+  return firstNonZero > 0 ? result.slice(firstNonZero) : result;
 }
 
 export function dailySleepTotals(entries, numDays = 30) {
@@ -183,5 +185,7 @@ export function dailySleepTotals(entries, numDays = 30) {
     const key = entryDateStr(e.start);
     if (key in sums) sums[key] += parseDuration(e.duration);
   });
-  return days.map((d) => ({ date: d.label, hours: Math.round(sums[d.dateStr] * 10) / 10 }));
+  const result = days.map((d) => ({ date: d.label, hours: Math.round(sums[d.dateStr] * 10) / 10 }));
+  const firstNonZero = result.findIndex((d) => d.hours > 0);
+  return firstNonZero > 0 ? result.slice(firstNonZero) : result;
 }
