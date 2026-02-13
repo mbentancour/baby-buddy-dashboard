@@ -1,15 +1,21 @@
 export function getAge(birthDate) {
   const birth = new Date(birthDate);
   const now = new Date();
-  const months =
+  let months =
     (now.getFullYear() - birth.getFullYear()) * 12 +
     (now.getMonth() - birth.getMonth());
   const days = now.getDate() - birth.getDate();
+  if (days < 0) months--;
+  const adjustedDays = days < 0 ? 30 + days : days;
   if (months < 1)
     return `${Math.max(0, Math.floor((now - birth) / 86400000))} days`;
-  return days < 0
-    ? `${months - 1}mo ${30 + days}d`
-    : `${months}mo ${days}d`;
+  if (months < 12)
+    return `${months}mo ${adjustedDays}d`;
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+  if (remainingMonths === 0)
+    return `${years}y`;
+  return `${years}y ${remainingMonths}mo`;
 }
 
 export function formatElapsed(seconds) {

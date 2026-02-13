@@ -40,7 +40,7 @@ const children = [
     id: 2,
     first_name: "Liam",
     last_name: "Demo",
-    birth_date: isoDate(daysAgo(730)),
+    birth_date: isoDate(daysAgo(731)),
     picture: null,
   },
 ];
