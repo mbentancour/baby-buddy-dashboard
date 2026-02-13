@@ -106,24 +106,24 @@ export default function App() {
         </div>
       </header>
 
-      {/* Active Timer Bar */}
-      {timer.activeTimer && (
-        <div className="timer-bar fade-in">
+      {/* Active Timer Bars */}
+      {timer.activeTimers.map((t) => (
+        <div key={t.id} className="timer-bar fade-in">
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span className="timer-pulse" />
             <Icons.Timer />
             <span style={{ fontSize: 13, fontWeight: 500 }}>
-              {timer.activeTimer.name}
+              {t.name}
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span className="timer-elapsed">{formatElapsed(timer.elapsed)}</span>
+            <span className="timer-elapsed">{formatElapsed(timer.elapsedMap[t.id] || 0)}</span>
             <button
               className="timer-save-btn"
               onClick={async () => {
-                const t = await timer.stopTimer();
-                if (t) {
-                  setModal({ type: timerNameToType(t.name), timerId: t.id });
+                const stopped = await timer.stopTimer(t.id);
+                if (stopped) {
+                  setModal({ type: timerNameToType(stopped.name), timerId: stopped.id });
                 }
               }}
             >
@@ -131,13 +131,13 @@ export default function App() {
             </button>
             <button
               className="timer-discard-btn"
-              onClick={() => timer.discardTimer()}
+              onClick={() => timer.discardTimer(t.id)}
             >
               <Icons.X />
             </button>
           </div>
         </div>
-      )}
+      ))}
 
       {/* Tab Navigation */}
       <nav className="tab-nav fade-in">
@@ -200,42 +200,38 @@ export default function App() {
             ))}
           </div>
         )}
-        {!timer.activeTimer && (
-          <>
-            {showTimerPicker && (
-              <div className="fab-menu fade-in" style={{ right: 76 }}>
-                {TIMER_TYPES.map((t) => (
-                  <button
-                    key={t.id}
-                    className="fab-action"
-                    onClick={() => {
-                      timer.startTimer(t.id);
-                      setShowTimerPicker(false);
-                    }}
-                  >
-                    <span
-                      className="fab-action-icon"
-                      style={{ background: `${t.color}18`, color: t.color }}
-                    >
-                      {t.icon}
-                    </span>
-                    <span className="fab-action-label">{t.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-            <TimerButton
-              label="Timer"
-              icon={<Icons.Timer />}
-              color={colors.feeding}
-              active={false}
-              onClick={() => {
-                setShowTimerPicker(!showTimerPicker);
-                setShowActions(false);
-              }}
-            />
-          </>
+        {showTimerPicker && (
+          <div className="fab-menu fade-in" style={{ right: 76 }}>
+            {TIMER_TYPES.map((t) => (
+              <button
+                key={t.id}
+                className="fab-action"
+                onClick={() => {
+                  timer.startTimer(t.id);
+                  setShowTimerPicker(false);
+                }}
+              >
+                <span
+                  className="fab-action-icon"
+                  style={{ background: `${t.color}18`, color: t.color }}
+                >
+                  {t.icon}
+                </span>
+                <span className="fab-action-label">{t.label}</span>
+              </button>
+            ))}
+          </div>
         )}
+        <TimerButton
+          label="Timer"
+          icon={<Icons.Timer />}
+          color={colors.feeding}
+          active={false}
+          onClick={() => {
+            setShowTimerPicker(!showTimerPicker);
+            setShowActions(false);
+          }}
+        />
         <button
           className="fab-btn"
           style={{ background: showActions ? "var(--text-muted)" : colors.feeding }}

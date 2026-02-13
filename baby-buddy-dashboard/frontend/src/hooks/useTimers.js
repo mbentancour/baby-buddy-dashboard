@@ -2,66 +2,70 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { api } from "../api";
 
 export function useTimers(serverTimers, childId) {
-  const [activeTimer, setActiveTimer] = useState(null);
-  const [elapsed, setElapsed] = useState(0);
+  const [activeTimers, setActiveTimers] = useState([]);
+  const [elapsedMap, setElapsedMap] = useState({});
   const tickRef = useRef(null);
 
   // Sync with server timers on data load
   useEffect(() => {
     if (serverTimers?.length > 0) {
-      const running = serverTimers[0];
-      setActiveTimer({
-        id: running.id,
-        name: running.name || "timer",
-        start: new Date(running.start),
-      });
+      setActiveTimers(
+        serverTimers.map((t) => ({
+          id: t.id,
+          name: t.name || "timer",
+          start: new Date(t.start),
+        }))
+      );
     } else {
-      setActiveTimer(null);
+      setActiveTimers([]);
     }
   }, [serverTimers]);
 
-  // Tick elapsed time based on server start time
+  // Tick elapsed time for all active timers
   useEffect(() => {
-    if (!activeTimer) {
-      setElapsed(0);
+    if (activeTimers.length === 0) {
+      setElapsedMap({});
       clearInterval(tickRef.current);
       return;
     }
     const tick = () => {
-      setElapsed(Math.floor((Date.now() - activeTimer.start.getTime()) / 1000));
+      const now = Date.now();
+      const map = {};
+      for (const t of activeTimers) {
+        map[t.id] = Math.floor((now - t.start.getTime()) / 1000);
+      }
+      setElapsedMap(map);
     };
     tick();
     tickRef.current = setInterval(tick, 1000);
     return () => clearInterval(tickRef.current);
-  }, [activeTimer]);
+  }, [activeTimers]);
 
   const startTimer = useCallback(
     async (name) => {
       if (!childId) return;
       const res = await api.createTimer({ child: childId, name });
-      setActiveTimer({
-        id: res.id,
-        name: res.name || name,
-        start: new Date(res.start),
-      });
+      setActiveTimers((prev) => [
+        ...prev,
+        { id: res.id, name: res.name || name, start: new Date(res.start) },
+      ]);
     },
     [childId]
   );
 
-  const stopTimer = useCallback(async () => {
-    if (!activeTimer) return null;
-    const timer = { ...activeTimer };
-    // Don't delete — Baby Buddy auto-deletes timers when used in a creation call.
-    // If the user cancels the form, the timer stays and reappears on next sync.
-    setActiveTimer(null);
-    return timer;
-  }, [activeTimer]);
+  const stopTimer = useCallback(async (timerId) => {
+    const timer = activeTimers.find((t) => t.id === timerId);
+    if (!timer) return null;
+    setActiveTimers((prev) => prev.filter((t) => t.id !== timerId));
+    return { ...timer };
+  }, [activeTimers]);
 
-  const discardTimer = useCallback(async () => {
-    if (!activeTimer) return;
-    await api.deleteTimer(activeTimer.id);
-    setActiveTimer(null);
-  }, [activeTimer]);
+  const discardTimer = useCallback(async (timerId) => {
+    const timer = activeTimers.find((t) => t.id === timerId);
+    if (!timer) return;
+    await api.deleteTimer(timerId);
+    setActiveTimers((prev) => prev.filter((t) => t.id !== timerId));
+  }, [activeTimers]);
 
-  return { activeTimer, elapsed, startTimer, stopTimer, discardTimer };
+  return { activeTimers, elapsedMap, startTimer, stopTimer, discardTimer };
 }
