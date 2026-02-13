@@ -4,10 +4,16 @@ A modern, responsive dashboard for [Baby Buddy](https://github.com/babybuddy/bab
 
 ![Stack](https://img.shields.io/badge/React-18-blue) ![Stack](https://img.shields.io/badge/FastAPI-Python-green) ![Stack](https://img.shields.io/badge/Home%20Assistant-Add--on-blue)
 
+## Screenshots
+
+| Overview | Growth |
+|----------|--------|
+| ![Overview](screenshots/overview.png) | ![Growth](screenshots/growth.png) |
+
 ## Features
 
 - **Overview dashboard** — daily stats, timelines, and charts for feedings, sleep, diapers, and tummy time
-- **Growth tracking** — weight, height, and temperature trends with line charts
+- **Growth tracking** — weight, height, feeding totals, and sleep averages with trend charts
 - **Quick logging** — floating action button to quickly log feedings, sleep, diaper changes, tummy time, temperature, and notes
 - **Active timers** — start/stop timers for ongoing activities (feeding, sleep, tummy time)
 - **Auto-refresh** — configurable polling interval keeps the dashboard up to date
@@ -132,7 +138,7 @@ baby-buddy-dashboard/               # ← repository root
             │   └── useTimers.js     # Timer state management
             ├── tabs/
             │   ├── OverviewTab.jsx  # Daily stats, timelines, and charts
-            │   └── GrowthTab.jsx    # Weight, height, temperature trends
+            │   └── GrowthTab.jsx    # Weight, height, feeding & sleep trends
             ├── components/
             │   ├── Icons.jsx        # SVG icon components
             │   ├── StatCard.jsx     # Stat display card
