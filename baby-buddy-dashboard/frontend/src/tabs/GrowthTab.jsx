@@ -13,9 +13,11 @@ import SectionCard from "../components/SectionCard";
 import CustomTooltip from "../components/CustomTooltip";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
+import { useUnits } from "../utils/units";
 import { toGrowthSeries, dailyFeedingTotals, dailySleepTotals } from "../utils/formatters";
 
 export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySleep }) {
+  const units = useUnits();
   const weightSeries = toGrowthSeries(weights, "weight");
   const heightSeries = toGrowthSeries(heights, "height");
   const feedingSeries = dailyFeedingTotals(monthlyFeedings);
@@ -74,7 +76,7 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
               </span>
             </div>
             <div style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>
-              {latestWeight ? `${latestWeight.weight} kg` : "—"}
+              {latestWeight ? `${latestWeight.weight} ${units.weight}` : "—"}
             </div>
             {latestWeight && (
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
@@ -113,7 +115,7 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
               </span>
             </div>
             <div style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>
-              {latestHeight ? `${latestHeight.height} cm` : "—"}
+              {latestHeight ? `${latestHeight.height} ${units.length}` : "—"}
             </div>
             {latestHeight && (
               <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
@@ -152,7 +154,7 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
               </span>
             </div>
             <div style={{ fontSize: 28, fontWeight: 700, color: "var(--text)", letterSpacing: "-0.02em" }}>
-              {avgFeeding ? `${avgFeeding} mL` : "—"}
+              {avgFeeding ? `${avgFeeding} ${units.volume}` : "—"}
             </div>
             <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 4 }}>
               per day (30d)

@@ -26,14 +26,16 @@ import {
   aggregateTummyByDay,
   parseDuration,
 } from "../utils/formatters";
+import { useUnits } from "../utils/units";
 
 const COLLAPSED_COUNT = 2;
 
 export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRaw, sleepEntries, weeklySleep, changes, tummyTimes, weeklyTummyTimes, onEditEntry }) {
+  const units = useUnits();
   const [expanded, setExpanded] = useState({});
   const toggle = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
-  const feedingTimeline = toFeedingTimeline(feedings);
+  const feedingTimeline = toFeedingTimeline(feedings, units.volume);
   const diaperTimeline = toDiaperTimeline(changes);
   const sleepBlocks = toSleepBlocks(sleepEntries);
   const weeklyFeedings = aggregateByDayOfWeek(weeklyFeedingsRaw, "amount");
@@ -71,7 +73,7 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
           <StatCard
             icon={<Icons.Bottle />}
             label="Feedings"
-            value={totalFeeding > 0 ? `${Math.round(totalFeeding)} mL` : `${feedings.length}`}
+            value={totalFeeding > 0 ? `${Math.round(totalFeeding)} ${units.volume}` : `${feedings.length}`}
             sub={`${feedings.length} feeding${feedings.length !== 1 ? "s" : ""} today`}
             color={colors.feeding}
           />

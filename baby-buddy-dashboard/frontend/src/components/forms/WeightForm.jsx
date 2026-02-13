@@ -2,8 +2,10 @@ import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
+import { useUnits } from "../../utils/units";
 
 export default function WeightForm({ childId, onDone, onClose }) {
+  const units = useUnits();
   const [weight, setWeight] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -25,7 +27,7 @@ export default function WeightForm({ childId, onDone, onClose }) {
   return (
     <Modal title="Log Weight" onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <FormField label="Weight (kg)">
+        <FormField label={`Weight (${units.weight})`}>
           <FormInput
             type="number"
             value={weight}

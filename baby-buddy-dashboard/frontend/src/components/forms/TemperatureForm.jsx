@@ -2,8 +2,10 @@ import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
+import { useUnits } from "../../utils/units";
 
 export default function TemperatureForm({ childId, onDone, onClose }) {
+  const units = useUnits();
   const [temp, setTemp] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -25,7 +27,7 @@ export default function TemperatureForm({ childId, onDone, onClose }) {
   return (
     <Modal title="Log Temperature" onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <FormField label="Temperature">
+        <FormField label={`Temperature (${units.temp})`}>
           <FormInput
             type="number"
             value={temp}

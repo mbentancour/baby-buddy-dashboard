@@ -2,8 +2,10 @@ import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
+import { useUnits } from "../../utils/units";
 
 export default function HeightForm({ childId, onDone, onClose }) {
+  const units = useUnits();
   const [height, setHeight] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -25,7 +27,7 @@ export default function HeightForm({ childId, onDone, onClose }) {
   return (
     <Modal title="Log Height" onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <FormField label="Height (cm)">
+        <FormField label={`Height (${units.length})`}>
           <FormInput
             type="number"
             value={height}

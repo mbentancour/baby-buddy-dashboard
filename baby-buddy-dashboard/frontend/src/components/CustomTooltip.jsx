@@ -1,4 +1,7 @@
+import { useUnits } from "../utils/units";
+
 export default function CustomTooltip({ active, payload, label }) {
+  const units = useUnits();
   if (!active || !payload?.length) return null;
   return (
     <div
@@ -34,7 +37,7 @@ export default function CustomTooltip({ active, payload, label }) {
             }}
           />
           {p.name}: {p.value}
-          {p.name === "amount" ? " mL" : p.name === "minutes" ? " min" : ""}
+          {p.name === "amount" ? ` ${units.volume}` : p.name === "minutes" ? " min" : p.name === "weight" ? ` ${units.weight}` : p.name === "height" ? ` ${units.length}` : ""}
         </div>
       ))}
     </div>

@@ -51,10 +51,10 @@ export function formatDuration(durationStr) {
   return `${hours.toFixed(1)}h`;
 }
 
-export function toFeedingTimeline(feedings) {
+export function toFeedingTimeline(feedings, volumeUnit = "mL") {
   return feedings.map((f) => ({
     time: formatTime(f.end || f.start),
-    label: `${f.amount ? f.amount + " mL" : ""} ${f.method || f.type || ""}`.trim() || "Feeding",
+    label: `${f.amount ? f.amount + " " + volumeUnit : ""} ${f.method || f.type || ""}`.trim() || "Feeding",
     detail: timeAgo(f.end || f.start),
     amount: f.amount || 0,
     type: f.type,

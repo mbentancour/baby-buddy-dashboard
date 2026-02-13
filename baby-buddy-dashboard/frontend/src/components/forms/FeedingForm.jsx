@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormSelect, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
+import { useUnits } from "../../utils/units";
 
 const TYPES = [
   { value: "breast milk", label: "Breast Milk" },
@@ -25,6 +26,7 @@ function toLocalDatetime(date) {
 }
 
 export default function FeedingForm({ childId, timerId, entry, onDone, onClose }) {
+  const units = useUnits();
   const isEdit = !!entry;
   const now = new Date();
   const fifteenMinsAgo = new Date(now.getTime() - 15 * 60 * 1000);
@@ -70,7 +72,7 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
         <FormField label="Method">
           <FormSelect options={METHODS} value={method} onChange={(e) => setMethod(e.target.value)} />
         </FormField>
-        <FormField label="Amount (mL)">
+        <FormField label={`Amount (${units.volume})`}>
           <FormInput type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Optional" min="0" step="5" />
         </FormField>
         {(isEdit || !timerId) && (

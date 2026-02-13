@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useBabyData } from "./hooks/useBabyData";
 import { useTimers } from "./hooks/useTimers";
+import { UnitContext } from "./utils/units";
 import { Icons } from "./components/Icons";
 import { colors } from "./utils/colors";
 import { getAge, formatElapsed } from "./utils/formatters";
@@ -87,6 +88,7 @@ export default function App() {
   }
 
   return (
+    <UnitContext.Provider value={data.unitSystem}>
     <div className="app">
       {/* Header */}
       <header className="app-header fade-in">
@@ -345,5 +347,6 @@ export default function App() {
         />
       )}
     </div>
+    </UnitContext.Provider>
   );
 }

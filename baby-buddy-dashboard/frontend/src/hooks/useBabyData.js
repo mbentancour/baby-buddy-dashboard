@@ -25,6 +25,7 @@ export function useBabyData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastSync, setLastSync] = useState(null);
+  const [unitSystem, setUnitSystem] = useState("metric");
   const intervalRef = useRef(null);
 
   const fetchAll = useCallback(async () => {
@@ -138,6 +139,7 @@ export function useBabyData() {
     api
       .getConfig()
       .then((cfg) => {
+        if (cfg.unit_system) setUnitSystem(cfg.unit_system);
         if (cfg.demo_mode) {
           loadMock();
         } else {
@@ -172,6 +174,7 @@ export function useBabyData() {
     loading,
     error,
     lastSync,
+    unitSystem,
     refetch: fetchAll,
   };
 }

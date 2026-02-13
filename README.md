@@ -13,9 +13,11 @@ A modern, responsive dashboard for [Baby Buddy](https://github.com/babybuddy/bab
 ## Features
 
 - **Overview dashboard** — daily stats, timelines, and charts for feedings, sleep, diapers, and tummy time
-- **Growth tracking** — weight, height, feeding totals, and sleep averages with trend charts
-- **Quick logging** — floating action button to quickly log feedings, sleep, diaper changes, tummy time, temperature, and notes
-- **Active timers** — start/stop timers for ongoing activities (feeding, sleep, tummy time)
+- **Growth tracking** — 30-day feeding totals, sleep averages, weight, and height trend charts
+- **Quick logging** — grouped floating action button to quickly log feedings, sleep, diaper changes, tummy time, temperature, weight, height, and notes
+- **Multiple timers** — run concurrent timers for overlapping activities (feeding, sleep, tummy time)
+- **Metric / Imperial** — configurable unit labels (kg/lb, cm/in, mL/oz, °C/°F) with no data conversion
+- **Demo mode** — built-in mock data to preview the dashboard without a Baby Buddy instance
 - **Auto-refresh** — configurable polling interval keeps the dashboard up to date
 - **Dark theme** — designed for always-on displays and low-light nursery use
 - **Responsive** — works on desktop, tablet, and phone screens
@@ -46,11 +48,13 @@ The backend acts as an API proxy so the Baby Buddy API key stays server-side and
    https://github.com/mbentancour/baby-buddy-dashboard
    ```
 4. Find **Baby Buddy Dashboard** in the store and click **Install**
-5. Configure the add-on with your Baby Buddy URL and API key:
+5. Configure the add-on:
    - **Baby Buddy URL** — full URL to your instance (e.g., `http://192.168.1.100:8000`)
    - **API Key** — found in Baby Buddy under *Settings > API Key*
    - **Refresh Interval** — polling interval in seconds (default: 30)
-4. Start the add-on — the dashboard appears in the Home Assistant sidebar
+   - **Unit System** — `metric` or `imperial` (labels only, no conversion)
+   - **Demo Mode** — enable to preview with mock data (no Baby Buddy required)
+6. Start the add-on — the dashboard appears in the Home Assistant sidebar
 
 ## Local Development
 
@@ -74,6 +78,7 @@ The backend acts as an API proxy so the Baby Buddy API key stays server-side and
    BABY_BUDDY_URL=http://192.168.1.100:8000
    BABY_BUDDY_API_KEY=your_api_key_here
    REFRESH_INTERVAL=30
+   UNIT_SYSTEM=metric
    ```
 
 2. Run the development servers:
@@ -154,9 +159,13 @@ baby-buddy-dashboard/               # ← repository root
             │       ├── DiaperForm.jsx
             │       ├── TemperatureForm.jsx
             │       ├── TummyTimeForm.jsx
+            │       ├── WeightForm.jsx
+            │       ├── HeightForm.jsx
             │       └── NoteForm.jsx
             └── utils/
                 ├── colors.js        # Color palette
+                ├── units.js         # Unit system context (metric/imperial)
+                ├── mockData.js      # Demo mode mock data generator
                 └── formatters.js    # Date, time, and data formatting
 ```
 
@@ -167,6 +176,8 @@ baby-buddy-dashboard/               # ← repository root
 | `baby_buddy_url` | Full URL to your Baby Buddy instance | — |
 | `baby_buddy_api_key` | Baby Buddy API token | — |
 | `refresh_interval` | Polling interval in seconds (5–300) | 30 |
+| `unit_system` | Unit labels: `metric` (kg, cm, mL, °C) or `imperial` (lb, in, oz, °F) | metric |
+| `demo_mode` | Show mock data without connecting to Baby Buddy | false |
 
 ### Getting your API key
 
