@@ -137,4 +137,7 @@ if STATIC_DIR.exists():
         file_path = STATIC_DIR / path
         if file_path.is_file() and ".." not in path:
             return FileResponse(file_path)
-        return FileResponse(STATIC_DIR / "index.html")
+        return FileResponse(
+            STATIC_DIR / "index.html",
+            headers={"Cache-Control": "no-cache"},
+        )
