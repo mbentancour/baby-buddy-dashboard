@@ -112,6 +112,45 @@ body {
   border-color: var(--text-dim);
 }
 
+/* Child switcher */
+.child-switcher {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.child-switcher::-webkit-scrollbar {
+  display: none;
+}
+.child-chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.child-chip:hover {
+  color: var(--text-muted);
+  border-color: var(--text-dim);
+}
+.child-chip-active {
+  background: #F59E0B18;
+  color: #F59E0B;
+  border-color: #F59E0B40;
+}
+.child-chip-active:hover {
+  color: #F59E0B;
+  border-color: #F59E0B40;
+}
+
 /* Timer bar */
 .timer-bar {
   display: flex;

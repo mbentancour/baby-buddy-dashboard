@@ -124,6 +124,21 @@ export default function App() {
         </div>
       </header>
 
+      {/* Child Switcher (only when 2+ children) */}
+      {data.children.length >= 2 && (
+        <div className="child-switcher fade-in">
+          {data.children.map((c) => (
+            <button
+              key={c.id}
+              className={`child-chip${c.id === data.child?.id ? " child-chip-active" : ""}`}
+              onClick={() => data.selectChild(c.id)}
+            >
+              {c.first_name}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Active Timer Bars */}
       {timer.activeTimers.map((t) => (
         <div key={t.id} className="timer-bar fade-in">
