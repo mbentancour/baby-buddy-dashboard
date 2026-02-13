@@ -8,3 +8,9 @@ configuration:
   refresh_interval:
     name: Refresh Interval
     description: "How often (in seconds) the dashboard polls for new data"
+  demo_mode:
+    name: Demo Mode
+    description: "Show mock data without connecting to a Baby Buddy instance"
+  unit_system:
+    name: Unit System
+    description: "Unit labels for measurements (metric: kg, cm, mL, °C — imperial: lb, in, oz, °F)"

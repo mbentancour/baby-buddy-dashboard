@@ -118,6 +118,7 @@ baby-buddy-dashboard/               # ← repository root
 ├── .env.example                     # Environment variable template (local dev)
 ├── .gitignore
 ├── run_local.sh                     # Local development script (sources .env)
+├── screenshots/                     # UI screenshots for README
 │
 └── baby-buddy-dashboard/            # ← the add-on
     ├── config.yaml                  # Home Assistant add-on config
