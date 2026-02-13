@@ -22,15 +22,30 @@ const TABS = [
   { id: "growth", label: "Growth", icon: <Icons.TrendUp /> },
 ];
 
-const QUICK_ACTIONS = [
-  { id: "feeding", label: "Feeding", icon: <Icons.Bottle />, color: colors.feeding },
-  { id: "sleep", label: "Sleep", icon: <Icons.Moon />, color: colors.sleep },
-  { id: "diaper", label: "Diaper", icon: <Icons.Droplet />, color: colors.diaper },
-  { id: "tummy", label: "Tummy", icon: <Icons.Sun />, color: colors.tummy },
-  { id: "temp", label: "Temp", icon: <Icons.Temp />, color: colors.temp },
-  { id: "weight", label: "Weight", icon: <Icons.Weight />, color: colors.growth },
-  { id: "height", label: "Height", icon: <Icons.Ruler />, color: colors.height },
-  { id: "note", label: "Note", icon: <Icons.Heart />, color: "#EC4899" },
+const ACTION_GROUPS = [
+  {
+    label: "Track",
+    actions: [
+      { id: "feeding", label: "Feeding", icon: <Icons.Bottle />, color: colors.feeding },
+      { id: "sleep", label: "Sleep", icon: <Icons.Moon />, color: colors.sleep },
+      { id: "diaper", label: "Diaper", icon: <Icons.Droplet />, color: colors.diaper },
+      { id: "tummy", label: "Tummy", icon: <Icons.Sun />, color: colors.tummy },
+    ],
+  },
+  {
+    label: "Measure",
+    actions: [
+      { id: "temp", label: "Temp", icon: <Icons.Temp />, color: colors.temp },
+      { id: "weight", label: "Weight", icon: <Icons.Weight />, color: colors.growth },
+      { id: "height", label: "Height", icon: <Icons.Ruler />, color: colors.height },
+    ],
+  },
+  {
+    label: "Note",
+    actions: [
+      { id: "note", label: "Note", icon: <Icons.Heart />, color: "#EC4899" },
+    ],
+  },
 ];
 
 const TIMER_TYPES = [
@@ -53,6 +68,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("overview");
   const [modal, setModal] = useState(null);
   const [showActions, setShowActions] = useState(false);
+  const [expandedGroup, setExpandedGroup] = useState("Track");
   const [showTimerPicker, setShowTimerPicker] = useState(false);
 
   const closeModal = () => setModal(null);
@@ -180,24 +196,41 @@ export default function App() {
       <div className="fab-container">
         {showActions && (
           <div className="fab-menu fade-in">
-            {QUICK_ACTIONS.map((action) => (
-              <button
-                key={action.id}
-                className="fab-action"
-                onClick={() => {
-                  setModal({ type: action.id });
-                  setShowActions(false);
-                }}
-              >
-                <span
-                  className="fab-action-icon"
-                  style={{ background: `${action.color}18`, color: action.color }}
-                >
-                  {action.icon}
-                </span>
-                <span className="fab-action-label">{action.label}</span>
-              </button>
-            ))}
+            {ACTION_GROUPS.map((group) => {
+              const isOpen = expandedGroup === group.label;
+              return (
+                <div key={group.label} className="fab-group">
+                  <button
+                    className={`fab-group-label${isOpen ? " fab-group-label-active" : ""}`}
+                    onClick={() => setExpandedGroup(isOpen ? null : group.label)}
+                  >
+                    {group.label}
+                  </button>
+                  {isOpen && (
+                    <div className="fab-group-items">
+                      {group.actions.map((action) => (
+                        <button
+                          key={action.id}
+                          className="fab-action"
+                          onClick={() => {
+                            setModal({ type: action.id });
+                            setShowActions(false);
+                          }}
+                        >
+                          <span
+                            className="fab-action-icon"
+                            style={{ background: `${action.color}18`, color: action.color }}
+                          >
+                            {action.icon}
+                          </span>
+                          <span className="fab-action-label">{action.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
         {showTimerPicker && (
@@ -235,7 +268,7 @@ export default function App() {
         <button
           className="fab-btn"
           style={{ background: showActions ? "var(--text-muted)" : colors.feeding }}
-          onClick={() => { setShowActions(!showActions); setShowTimerPicker(false); }}
+          onClick={() => { setShowActions(!showActions); setShowTimerPicker(false); setExpandedGroup("Track"); }}
         >
           <span style={{ transform: showActions ? "rotate(45deg)" : "none", transition: "transform 0.2s", display: "flex" }}>
             <Icons.Plus />

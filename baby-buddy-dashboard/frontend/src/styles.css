@@ -302,6 +302,51 @@ body {
   font-weight: 600;
 }
 
+.fab-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.fab-group + .fab-group {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.fab-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.fab-group-label:hover {
+  color: var(--text-muted);
+  border-color: var(--text-dim);
+}
+
+.fab-group-label-active {
+  color: var(--text-muted);
+  border-color: var(--text-dim);
+}
+
+.fab-group-items {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
 /* Expand/collapse toggle */
 .expand-toggle {
   display: block;
