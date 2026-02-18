@@ -1,0 +1,27 @@
+services:
+  babybuddy:
+    image: lscr.io/linuxserver/babybuddy:latest
+    profiles:
+      - full
+    environment:
+      - TZ=${TZ:-America/New_York}
+    volumes:
+      - babybuddy_data:/config
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  dashboard:
+    image: mbentancour/baby-buddy-dashboard:latest
+    environment:
+      - BABY_BUDDY_URL=${BABY_BUDDY_URL:-http://babybuddy:8000}
+      - BABY_BUDDY_API_KEY=${BABY_BUDDY_API_KEY}
+      - REFRESH_INTERVAL=${REFRESH_INTERVAL:-30}
+      - UNIT_SYSTEM=${UNIT_SYSTEM:-metric}
+      - DEMO_MODE=${DEMO_MODE:-false}
+    ports:
+      - "8099:8099"
+    restart: unless-stopped
+
+volumes:
+  babybuddy_data:

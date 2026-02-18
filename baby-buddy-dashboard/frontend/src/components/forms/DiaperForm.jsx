@@ -3,6 +3,11 @@ import { api } from "../../api";
 import Modal, { FormField, FormSelect, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
 
+function toLocalDatetime(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 const COLORS = [
   { value: "", label: "Not specified" },
   { value: "black", label: "Black" },
@@ -13,6 +18,7 @@ const COLORS = [
 
 export default function DiaperForm({ childId, entry, onDone, onClose, preset }) {
   const isEdit = !!entry;
+  const [time, setTime] = useState(entry?.time ? toLocalDatetime(new Date(entry.time)) : toLocalDatetime(new Date()));
   const [wet, setWet] = useState(entry ? entry.wet : (preset === "wet" || preset === "both"));
   const [solid, setSolid] = useState(entry ? entry.solid : (preset === "solid" || preset === "both"));
   const [color, setColor] = useState(entry?.color || "");
@@ -23,7 +29,7 @@ export default function DiaperForm({ childId, entry, onDone, onClose, preset }) 
     e.preventDefault();
     setSaving(true);
     try {
-      const data = { wet, solid };
+      const data = { wet, solid, time: `${time}:00` };
       if (color) data.color = color;
       if (notes.trim()) data.notes = notes.trim();
       if (isEdit) {
@@ -41,6 +47,14 @@ export default function DiaperForm({ childId, entry, onDone, onClose, preset }) 
   return (
     <Modal title={isEdit ? "Edit Diaper Change" : "Log Diaper Change"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
+        <FormField label="Time">
+          <FormInput
+            type="datetime-local"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            required
+          />
+        </FormField>
         <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
           {[
             { key: "wet", label: "Wet", active: wet, toggle: () => setWet(!wet) },

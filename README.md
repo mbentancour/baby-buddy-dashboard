@@ -56,6 +56,45 @@ The backend acts as an API proxy so the Baby Buddy API key stays server-side and
    - **Demo Mode** — enable to preview with mock data (no Baby Buddy required)
 6. Start the add-on — the dashboard appears in the Home Assistant sidebar
 
+## Docker Compose
+
+Run the dashboard using Docker Compose — no Home Assistant required. You can either connect to an existing Baby Buddy instance or run one side-by-side.
+
+1. Copy the example environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit `.env` with your settings:
+
+   ```
+   BABY_BUDDY_URL=http://your-babybuddy-server:8000
+   BABY_BUDDY_API_KEY=your_api_key_here
+   ```
+
+3. Start the dashboard:
+
+   ```bash
+   docker compose up -d
+   ```
+
+   The dashboard will be available at `http://localhost:8099`.
+
+### Running Baby Buddy side-by-side
+
+If you don't have a Baby Buddy instance yet, use the `full` profile to start one alongside the dashboard:
+
+```bash
+docker compose --profile full up -d
+```
+
+This starts:
+- **Baby Buddy** on `http://localhost:8000`
+- **Dashboard** on `http://localhost:8099` (auto-connects to the Baby Buddy container)
+
+On first run, open Baby Buddy at `http://localhost:8000`, create an account, then grab your API key from *Settings > API Key* and add it to `.env`. Restart with `docker compose --profile full up -d`.
+
 ## Local Development
 
 ### Prerequisites
@@ -115,7 +154,9 @@ baby-buddy-dashboard/               # ← repository root
 ├── repository.yaml                  # HA add-on repository metadata
 ├── README.md
 ├── LICENSE
-├── .env.example                     # Environment variable template (local dev)
+├── Dockerfile                       # Standalone Docker image (non-HA)
+├── docker-compose.yml               # Docker Compose with Baby Buddy + Dashboard
+├── .env.example                     # Environment variable template
 ├── .gitignore
 ├── run_local.sh                     # Local development script (sources .env)
 ├── screenshots/                     # UI screenshots for README
