@@ -1,5 +1,5 @@
 name: "Baby Buddy Dashboard"
-version: "1.1.1"
+version: "1.1.2"
 slug: "baby-buddy-dashboard"
 description: "Modern dashboard for Baby Buddy with charts, timers, and quick-log actions.
               Supports running as a standalone web app or as a Home Assistant add-on.
