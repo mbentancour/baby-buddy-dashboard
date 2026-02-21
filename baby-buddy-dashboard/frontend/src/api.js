@@ -94,6 +94,8 @@ export const api = {
   getTimers: () => request("timers/"),
   createTimer: (data) =>
     request("timers/", { method: "POST", body: JSON.stringify(data) }),
+  updateTimer: (id, data) =>
+    request(`timers/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
   deleteTimer: (id) => request(`timers/${id}/`, { method: "DELETE" }),
 
   // Config (our backend, not Baby Buddy)

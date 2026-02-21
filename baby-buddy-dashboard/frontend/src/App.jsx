@@ -55,6 +55,11 @@ const TIMER_TYPES = [
   { id: "tummy", label: "Tummy Time", icon: <Icons.Sun />, color: colors.tummy },
 ];
 
+function toLocalDatetime(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 function timerNameToType(name) {
   if (!name) return "feeding";
   const n = name.toLowerCase();
@@ -71,6 +76,7 @@ export default function App() {
   const [showActions, setShowActions] = useState(false);
   const [expandedGroup, setExpandedGroup] = useState("Track");
   const [showTimerPicker, setShowTimerPicker] = useState(false);
+  const [editingTimerId, setEditingTimerId] = useState(null);
 
   const closeModal = () => setModal(null);
   const handleFormDone = () => {
@@ -150,7 +156,33 @@ export default function App() {
             </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span className="timer-elapsed">{formatElapsed(timer.elapsedMap[t.id] || 0)}</span>
+            {editingTimerId === t.id ? (
+              <input
+                type="datetime-local"
+                className="timer-edit-input"
+                defaultValue={toLocalDatetime(t.start)}
+                autoFocus
+                onBlur={(e) => {
+                  if (e.target.value) {
+                    timer.editTimer(t.id, `${e.target.value}:00`);
+                  }
+                  setEditingTimerId(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") e.target.blur();
+                  if (e.key === "Escape") setEditingTimerId(null);
+                }}
+              />
+            ) : (
+              <span
+                className="timer-elapsed"
+                style={{ cursor: "pointer" }}
+                title="Click to edit start time"
+                onClick={() => setEditingTimerId(t.id)}
+              >
+                {formatElapsed(timer.elapsedMap[t.id] || 0)}
+              </span>
+            )}
             <button
               className="timer-save-btn"
               onClick={async () => {

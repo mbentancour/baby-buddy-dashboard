@@ -60,6 +60,13 @@ export function useTimers(serverTimers, childId) {
     return { ...timer };
   }, [activeTimers]);
 
+  const editTimer = useCallback(async (timerId, newStart) => {
+    await api.updateTimer(timerId, { start: newStart });
+    setActiveTimers((prev) =>
+      prev.map((t) => (t.id === timerId ? { ...t, start: new Date(newStart) } : t))
+    );
+  }, []);
+
   const discardTimer = useCallback(async (timerId) => {
     const timer = activeTimers.find((t) => t.id === timerId);
     if (!timer) return;
@@ -67,5 +74,5 @@ export function useTimers(serverTimers, childId) {
     setActiveTimers((prev) => prev.filter((t) => t.id !== timerId));
   }, [activeTimers]);
 
-  return { activeTimers, elapsedMap, startTimer, stopTimer, discardTimer };
+  return { activeTimers, elapsedMap, startTimer, stopTimer, editTimer, discardTimer };
 }

@@ -179,6 +179,18 @@ body {
   color: #F59E0B;
 }
 
+.timer-edit-input {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #F59E0B40;
+  background: #F59E0B15;
+  color: #F59E0B;
+  outline: none;
+  color-scheme: dark;
+}
+
 .timer-save-btn {
   padding: 6px 14px;
   border-radius: 8px;

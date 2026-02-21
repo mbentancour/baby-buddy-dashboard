@@ -94,12 +94,20 @@ export function toGrowthSeries(entries, valueKey) {
     .slice()
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .map((e) => ({
+      timestamp: new Date(e.date).getTime(),
       date: new Date(e.date).toLocaleDateString([], {
         month: "short",
         day: "numeric",
       }),
       [valueKey]: parseFloat(e[valueKey]),
     }));
+}
+
+export function formatGrowthTick(timestamp) {
+  return new Date(timestamp).toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function getLast7Days() {

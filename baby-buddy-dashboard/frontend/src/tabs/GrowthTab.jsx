@@ -14,7 +14,7 @@ import CustomTooltip from "../components/CustomTooltip";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
 import { useUnits } from "../utils/units";
-import { toGrowthSeries, dailyFeedingTotals, dailySleepTotals } from "../utils/formatters";
+import { toGrowthSeries, formatGrowthTick, dailyFeedingTotals, dailySleepTotals } from "../utils/formatters";
 
 export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySleep }) {
   const units = useUnits();
@@ -278,9 +278,9 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={weightSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip />} labelFormatter={formatGrowthTick} />
                     <Line
                       type="monotone"
                       dataKey="weight"
@@ -308,9 +308,9 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={heightSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                    <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip />} labelFormatter={formatGrowthTick} />
                     <Line
                       type="monotone"
                       dataKey="height"
