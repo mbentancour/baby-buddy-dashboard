@@ -7,6 +7,7 @@ import { colors } from "./utils/colors";
 import { getAge, formatElapsed } from "./utils/formatters";
 import OverviewTab from "./tabs/OverviewTab";
 import GrowthTab from "./tabs/GrowthTab";
+import NotesTab from "./tabs/NotesTab";
 import FeedingForm from "./components/forms/FeedingForm";
 import SleepForm from "./components/forms/SleepForm";
 import DiaperForm from "./components/forms/DiaperForm";
@@ -21,6 +22,7 @@ import "./styles.css";
 const TABS = [
   { id: "overview", label: "Overview", icon: <Icons.Activity /> },
   { id: "growth", label: "Growth", icon: <Icons.TrendUp /> },
+  { id: "notes", label: "Notes", icon: <Icons.StickyNote /> },
 ];
 
 const ACTION_GROUPS = [
@@ -44,7 +46,7 @@ const ACTION_GROUPS = [
   {
     label: "Note",
     actions: [
-      { id: "note", label: "Note", icon: <Icons.Heart />, color: "#EC4899" },
+      { id: "note", label: "Note", icon: <Icons.StickyNote />, color: colors.note },
     ],
   },
 ];
@@ -240,6 +242,12 @@ export default function App() {
             monthlySleep={data.monthlySleep}
           />
         )}
+        {activeTab === "notes" && (
+          <NotesTab
+            notes={data.notes}
+            onEditEntry={(type, entry) => setModal({ type, entry })}
+          />
+        )}
       </main>
 
       {/* Quick Action FAB */}
@@ -389,6 +397,7 @@ export default function App() {
       {modal?.type === "note" && (
         <NoteForm
           childId={data.child?.id}
+          entry={modal.entry}
           onDone={handleFormDone}
           onClose={closeModal}
         />

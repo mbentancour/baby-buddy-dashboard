@@ -89,6 +89,15 @@ export function toSleepBlocks(sleepEntries) {
   }));
 }
 
+export function toNoteTimeline(notes) {
+  return notes.map((n) => ({
+    time: formatTime(n.time),
+    text: n.note,
+    ago: timeAgo(n.time),
+    entry: n,
+  }));
+}
+
 export function toGrowthSeries(entries, valueKey) {
   return entries
     .slice()

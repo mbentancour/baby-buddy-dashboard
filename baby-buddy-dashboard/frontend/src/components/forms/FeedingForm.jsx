@@ -35,6 +35,7 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
   const [amount, setAmount] = useState(entry?.amount != null ? String(entry.amount) : "");
   const [start, setStart] = useState(entry?.start ? toLocalDatetime(new Date(entry.start)) : toLocalDatetime(fifteenMinsAgo));
   const [end, setEnd] = useState(entry?.end ? toLocalDatetime(new Date(entry.end)) : toLocalDatetime(now));
+  const [notes, setNotes] = useState(entry?.notes || "");
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -43,6 +44,7 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
     try {
       const data = { type, method };
       if (amount) data.amount = parseFloat(amount);
+      if (notes.trim()) data.notes = notes.trim();
       if (isEdit) {
         data.start = `${start}:00`;
         data.end = `${end}:00`;
@@ -95,6 +97,14 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
             </FormField>
           </>
         )}
+        <FormField label="Notes">
+          <FormInput
+            type="text"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Optional"
+          />
+        </FormField>
         <FormButton color={colors.feeding} disabled={saving}>
           {saving ? "Saving..." : isEdit ? "Update Feeding" : "Save Feeding"}
         </FormButton>

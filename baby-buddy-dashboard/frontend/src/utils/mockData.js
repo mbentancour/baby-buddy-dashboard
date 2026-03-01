@@ -321,6 +321,11 @@ function emmaData() {
       id: i + 1, child: 1, date: isoDate(daysAgo((7 - i) * 15)),
       height: (49 + i * 1.5).toFixed(1),
     })),
+    notes: [
+      { id: 1, child: 1, note: "Emma smiled for the first time today!", time: isoLocal(hoursAgo(3)) },
+      { id: 2, child: 1, note: "Started showing interest in colorful toys during tummy time", time: isoLocal(hoursAgo(8)) },
+      { id: 3, child: 1, note: "Doctor visit: all vaccinations up to date, growing well", time: isoLocal(hoursAgo(48)) },
+    ],
     monthlyFeedings: emmaMonthlyFeedings(),
     monthlySleep: emmaMonthlySleep(),
     timers: [],
@@ -347,6 +352,10 @@ function liamData() {
       id: i + 1, child: 2, date: isoDate(daysAgo((5 - i) * 21)),
       height: (84.0 + i * 0.8).toFixed(1),
     })),
+    notes: [
+      { id: 4, child: 2, note: "Liam said 'banana' clearly for the first time", time: isoLocal(hoursAgo(5)) },
+      { id: 5, child: 2, note: "Loves playing with building blocks, stacked 5 high today", time: isoLocal(hoursAgo(28)) },
+    ],
     monthlyFeedings: liamMonthlyFeedings(),
     monthlySleep: liamMonthlySleep(),
     timers: [],

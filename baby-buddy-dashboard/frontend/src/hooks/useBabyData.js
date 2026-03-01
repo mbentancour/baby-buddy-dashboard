@@ -34,6 +34,7 @@ export function useBabyData() {
   const [heights, setHeights] = useState([]);
   const [monthlyFeedings, setMonthlyFeedings] = useState([]);
   const [monthlySleep, setMonthlySleep] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [timers, setTimers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,6 +76,7 @@ export function useBabyData() {
         weightRes,
         heightRes,
         timersRes,
+        notesRes,
         monthlyFeedingsRes,
         monthlySleepRes,
       ] = await Promise.all([
@@ -89,6 +91,7 @@ export function useBabyData() {
         api.getWeight({ child: c, limit: 20, ordering: "-date" }),
         api.getHeight({ child: c, limit: 20, ordering: "-date" }),
         api.getTimers(),
+        api.getNotes({ child: c, limit: 20, ordering: "-time" }),
         api.getFeedings({ child: c, start_min: monthMin, limit: 500, ordering: "-start" }),
         api.getSleep({ child: c, start_min: monthMin, limit: 500, ordering: "-start" }),
       ]);
@@ -104,6 +107,7 @@ export function useBabyData() {
       setWeights(weightRes.results || []);
       setHeights(heightRes.results || []);
       setTimers(timersRes.results || []);
+      setNotes(notesRes.results || []);
       setMonthlyFeedings(monthlyFeedingsRes.results || []);
       setMonthlySleep(monthlySleepRes.results || []);
       setLastSync(new Date());
@@ -162,6 +166,7 @@ export function useBabyData() {
     setWeights(mock.weights);
     setHeights(mock.heights);
     setTimers(mock.timers);
+    setNotes(mock.notes);
     setMonthlyFeedings(mock.monthlyFeedings);
     setMonthlySleep(mock.monthlySleep);
     setLastSync(new Date());
@@ -186,6 +191,7 @@ export function useBabyData() {
       setWeights(mock.weights);
       setHeights(mock.heights);
       setTimers(mock.timers);
+      setNotes(mock.notes);
       setMonthlyFeedings(mock.monthlyFeedings);
       setMonthlySleep(mock.monthlySleep);
     },
@@ -232,6 +238,7 @@ export function useBabyData() {
     heights,
     monthlyFeedings,
     monthlySleep,
+    notes,
     timers,
     loading,
     error,

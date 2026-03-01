@@ -89,6 +89,8 @@ export const api = {
   getNotes: (params) => request(`notes/${qs(params)}`),
   createNote: (data) =>
     request("notes/", { method: "POST", body: JSON.stringify(data) }),
+  updateNote: (id, data) =>
+    request(`notes/${id}/`, { method: "PATCH", body: JSON.stringify(data) }),
 
   // Timers
   getTimers: () => request("timers/"),

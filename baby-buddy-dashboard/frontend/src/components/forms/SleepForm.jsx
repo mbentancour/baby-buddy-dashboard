@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
+
 import { colors } from "../../utils/colors";
 
 function toLocalDatetime(date) {
@@ -14,6 +15,7 @@ export default function SleepForm({ childId, timerId, entry, onDone, onClose }) 
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
   const [start, setStart] = useState(entry?.start ? toLocalDatetime(new Date(entry.start)) : toLocalDatetime(oneHourAgo));
   const [end, setEnd] = useState(entry?.end ? toLocalDatetime(new Date(entry.end)) : toLocalDatetime(now));
+  const [notes, setNotes] = useState(entry?.notes || "");
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -21,12 +23,15 @@ export default function SleepForm({ childId, timerId, entry, onDone, onClose }) 
     setSaving(true);
     try {
       if (isEdit) {
-        await api.updateSleep(entry.id, {
+        const data = {
           start: `${start}:00`,
           end: `${end}:00`,
-        });
+        };
+        if (notes.trim()) data.notes = notes.trim();
+        await api.updateSleep(entry.id, data);
       } else {
         const data = { child: childId };
+        if (notes.trim()) data.notes = notes.trim();
         if (timerId) {
           data.timer = timerId;
         } else {
@@ -68,6 +73,14 @@ export default function SleepForm({ childId, timerId, entry, onDone, onClose }) 
             </FormField>
           </>
         )}
+        <FormField label="Notes">
+          <FormInput
+            type="text"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Optional"
+          />
+        </FormField>
         <FormButton color={colors.sleep} disabled={saving}>
           {saving ? "Saving..." : isEdit ? "Update Sleep" : "Save Sleep"}
         </FormButton>

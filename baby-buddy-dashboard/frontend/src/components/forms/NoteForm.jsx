@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { api } from "../../api";
-import Modal, { FormField, FormButton } from "../Modal";
+import Modal, { FormField, FormInput, FormButton } from "../Modal";
+import { colors } from "../../utils/colors";
 
-export default function NoteForm({ childId, onDone, onClose }) {
-  const [note, setNote] = useState("");
+function toLocalDatetime(date) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export default function NoteForm({ childId, entry, onDone, onClose }) {
+  const isEdit = !!entry;
+  const [time, setTime] = useState(entry?.time ? toLocalDatetime(new Date(entry.time)) : toLocalDatetime(new Date()));
+  const [note, setNote] = useState(entry?.note || "");
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -11,7 +19,13 @@ export default function NoteForm({ childId, onDone, onClose }) {
     if (!note.trim()) return;
     setSaving(true);
     try {
-      await api.createNote({ child: childId, note: note.trim() });
+      const data = { note: note.trim(), time: `${time}:00` };
+      if (isEdit) {
+        await api.updateNote(entry.id, data);
+      } else {
+        data.child = childId;
+        await api.createNote(data);
+      }
       onDone();
     } catch {
       setSaving(false);
@@ -19,8 +33,16 @@ export default function NoteForm({ childId, onDone, onClose }) {
   };
 
   return (
-    <Modal title="Add Note" onClose={onClose}>
+    <Modal title={isEdit ? "Edit Note" : "Add Note"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
+        <FormField label="Time">
+          <FormInput
+            type="datetime-local"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            required
+          />
+        </FormField>
         <FormField label="Note">
           <textarea
             value={note}
@@ -41,8 +63,8 @@ export default function NoteForm({ childId, onDone, onClose }) {
             }}
           />
         </FormField>
-        <FormButton color="#EC4899" disabled={saving || !note.trim()}>
-          {saving ? "Saving..." : "Save Note"}
+        <FormButton color={colors.note} disabled={saving || !note.trim()}>
+          {saving ? "Saving..." : isEdit ? "Update Note" : "Save Note"}
         </FormButton>
       </form>
     </Modal>

@@ -6,4 +6,5 @@ export const colors = {
   tummy: "#EC4899",
   temp: "#EF4444",
   height: "#6366F1",
+  note: "#84CC16",
 };
