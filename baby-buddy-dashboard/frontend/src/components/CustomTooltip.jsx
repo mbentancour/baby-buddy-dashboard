@@ -1,8 +1,9 @@
 import { useUnits } from "../utils/units";
 
-export default function CustomTooltip({ active, payload, label }) {
+export default function CustomTooltip({ active, payload, label, labelFormatter }) {
   const units = useUnits();
   if (!active || !payload?.length) return null;
+  const formattedLabel = labelFormatter ? labelFormatter(label) : label;
   return (
     <div
       style={{
@@ -16,7 +17,7 @@ export default function CustomTooltip({ active, payload, label }) {
         boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
       }}
     >
-      <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontWeight: 600, marginBottom: 4 }}>{formattedLabel}</div>
       {payload.map((p, i) => (
         <div
           key={i}

@@ -4,9 +4,17 @@ import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
 import { useUnits } from "../../utils/units";
 
-export default function WeightForm({ childId, onDone, onClose }) {
+function toLocalDate(date) {
+  const d = new Date(date);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+export default function WeightForm({ childId, entry, onDone, onClose }) {
   const units = useUnits();
-  const [weight, setWeight] = useState("");
+  const isEdit = !!entry;
+  const [weight, setWeight] = useState(entry?.weight ? String(entry.weight) : "");
+  const [date, setDate] = useState(entry?.date ? toLocalDate(entry.date) : toLocalDate(new Date()));
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -14,10 +22,16 @@ export default function WeightForm({ childId, onDone, onClose }) {
     if (!weight) return;
     setSaving(true);
     try {
-      await api.createWeight({
-        child: childId,
+      const data = {
         weight: parseFloat(weight),
-      });
+        date,
+      };
+      if (isEdit) {
+        await api.updateWeight(entry.id, data);
+      } else {
+        data.child = childId;
+        await api.createWeight(data);
+      }
       onDone();
     } catch {
       setSaving(false);
@@ -25,7 +39,7 @@ export default function WeightForm({ childId, onDone, onClose }) {
   };
 
   return (
-    <Modal title="Log Weight" onClose={onClose}>
+    <Modal title={isEdit ? "Edit Weight" : "Log Weight"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <FormField label={`Weight (${units.weight})`}>
           <FormInput
@@ -37,10 +51,19 @@ export default function WeightForm({ childId, onDone, onClose }) {
             max="30"
             step="0.01"
             autoFocus
+            required
+          />
+        </FormField>
+        <FormField label="Date">
+          <FormInput
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
           />
         </FormField>
         <FormButton color={colors.growth} disabled={saving || !weight}>
-          {saving ? "Saving..." : "Save Weight"}
+          {saving ? "Saving..." : isEdit ? "Update Weight" : "Save Weight"}
         </FormButton>
       </form>
     </Modal>

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,13 +12,15 @@ import {
 } from "recharts";
 import SectionCard from "../components/SectionCard";
 import CustomTooltip from "../components/CustomTooltip";
+import DayActivitiesModal from "../components/DayActivitiesModal";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
 import { useUnits } from "../utils/units";
-import { toGrowthSeries, formatGrowthTick, dailyFeedingTotals, dailySleepTotals } from "../utils/formatters";
+import { toGrowthSeries, formatGrowthTick, dailyFeedingTotals, dailySleepTotals, getEntriesForDate } from "../utils/formatters";
 
-export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySleep }) {
+export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySleep, onEditEntry }) {
   const units = useUnits();
+  const [dayModal, setDayModal] = useState(null);
   const weightSeries = toGrowthSeries(weights, "weight");
   const heightSeries = toGrowthSeries(heights, "height");
   const feedingSeries = dailyFeedingTotals(monthlyFeedings);
@@ -35,6 +38,28 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
   const avgSleep = sleepDays.length
     ? (sleepDays.reduce((s, d) => s + d.hours, 0) / sleepDays.length).toFixed(1)
     : 0;
+
+  const handleChartClick = (data, type) => {
+    if (!data || !data.activeLabel) return;
+    const dateLabel = data.activeLabel;
+
+    let dayData = [];
+    if (type === "feeding") {
+      dayData = getEntriesForDate(monthlyFeedings, dateLabel, "start");
+    } else if (type === "sleep") {
+      dayData = getEntriesForDate(monthlySleep, dateLabel, "start");
+    }
+
+    setDayModal({ day: dateLabel, type, data: dayData });
+  };
+
+  const handleMeasurementClick = (data, type) => {
+    if (!data || !data.activePayload || !data.activePayload[0]) return;
+    const clickedPoint = data.activePayload[0].payload;
+    if (clickedPoint.entry) {
+      onEditEntry?.(type, clickedPoint.entry);
+    }
+  };
 
   return (
     <>
@@ -214,7 +239,7 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
             {feedingSeries.some((d) => d.amount > 0) ? (
               <div style={{ height: 200 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={feedingSeries}>
+                  <AreaChart data={feedingSeries} onClick={(data) => handleChartClick(data, "feeding")}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
                     <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
                     <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
@@ -226,7 +251,8 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
                       strokeWidth={2}
                       fill={`${colors.feeding}30`}
                       dot={false}
-                      activeDot={{ r: 4, fill: colors.feeding }}
+                      activeDot={{ r: 4, fill: colors.feeding, cursor: "pointer" }}
+                      cursor="pointer"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -245,7 +271,7 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
             {sleepSeries.some((d) => d.hours > 0) ? (
               <div style={{ height: 200 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={sleepSeries}>
+                  <AreaChart data={sleepSeries} onClick={(data) => handleChartClick(data, "sleep")}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
                     <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
                     <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
@@ -257,7 +283,8 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
                       strokeWidth={2}
                       fill={`${colors.sleep}30`}
                       dot={false}
-                      activeDot={{ r: 4, fill: colors.sleep }}
+                      activeDot={{ r: 4, fill: colors.sleep, cursor: "pointer" }}
+                      cursor="pointer"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -276,18 +303,18 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
             {weightSeries.length >= 2 ? (
               <div style={{ height: 200 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={weightSeries}>
+                  <LineChart data={weightSeries} onClick={(data) => handleMeasurementClick(data, "weight")}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
                     <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-                    <Tooltip content={<CustomTooltip />} labelFormatter={formatGrowthTick} />
+                    <Tooltip content={<CustomTooltip labelFormatter={formatGrowthTick} />} />
                     <Line
                       type="monotone"
                       dataKey="weight"
                       stroke={colors.growth}
                       strokeWidth={2.5}
-                      dot={{ fill: colors.growth, r: 4 }}
-                      activeDot={{ r: 6 }}
+                      dot={{ fill: colors.growth, r: 4, cursor: "pointer" }}
+                      activeDot={{ r: 6, cursor: "pointer" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -306,18 +333,18 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
             {heightSeries.length >= 2 ? (
               <div style={{ height: 200 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={heightSeries}>
+                  <LineChart data={heightSeries} onClick={(data) => handleMeasurementClick(data, "height")}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
                     <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-                    <Tooltip content={<CustomTooltip />} labelFormatter={formatGrowthTick} />
+                    <Tooltip content={<CustomTooltip labelFormatter={formatGrowthTick} />} />
                     <Line
                       type="monotone"
                       dataKey="height"
                       stroke={colors.height}
                       strokeWidth={2.5}
-                      dot={{ fill: colors.height, r: 4 }}
-                      activeDot={{ r: 6 }}
+                      dot={{ fill: colors.height, r: 4, cursor: "pointer" }}
+                      activeDot={{ r: 6, cursor: "pointer" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -330,6 +357,16 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
           </SectionCard>
         </div>
       </div>
+
+      {dayModal && (
+        <DayActivitiesModal
+          day={dayModal.day}
+          type={dayModal.type}
+          data={dayModal.data}
+          onEditEntry={onEditEntry}
+          onClose={() => setDayModal(null)}
+        />
+      )}
     </>
   );
 }

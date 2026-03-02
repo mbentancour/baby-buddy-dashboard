@@ -15,6 +15,7 @@ import SectionCard from "../components/SectionCard";
 import TimelineItem from "../components/TimelineItem";
 import DiaperBadge from "../components/DiaperBadge";
 import CustomTooltip from "../components/CustomTooltip";
+import DayActivitiesModal from "../components/DayActivitiesModal";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
 import {
@@ -24,6 +25,7 @@ import {
   aggregateByDayOfWeek,
   aggregateSleepByDay,
   aggregateTummyByDay,
+  getEntriesForDay,
   parseDuration,
 } from "../utils/formatters";
 import { useUnits } from "../utils/units";
@@ -33,6 +35,7 @@ const COLLAPSED_COUNT = 2;
 export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRaw, sleepEntries, weeklySleep, changes, tummyTimes, weeklyTummyTimes, onEditEntry }) {
   const units = useUnits();
   const [expanded, setExpanded] = useState({});
+  const [dayModal, setDayModal] = useState(null);
   const toggle = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const feedingTimeline = toFeedingTimeline(feedings, units.volume);
@@ -57,6 +60,22 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
   const wetCount = changes.filter((c) => c.wet && !c.solid).length;
   const solidCount = changes.filter((c) => c.solid && !c.wet).length;
   const bothCount = changes.filter((c) => c.wet && c.solid).length;
+
+  const handleChartClick = (data, type) => {
+    if (!data || !data.activeLabel) return;
+    const day = data.activeLabel;
+
+    let dayData = [];
+    if (type === "feeding") {
+      dayData = getEntriesForDay(weeklyFeedingsRaw, day, "start");
+    } else if (type === "sleep") {
+      dayData = getEntriesForDay(weeklySleep, day, "start");
+    } else if (type === "tummy") {
+      dayData = getEntriesForDay(weeklyTummyTimes, day, "start");
+    }
+
+    setDayModal({ day, type, data: dayData });
+  };
 
   return (
     <>
@@ -145,12 +164,12 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
             {weeklyFeedings.some((d) => d.amount > 0) && (
               <div style={{ marginTop: 16, height: 120 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={weeklyFeedings} barSize={18}>
+                  <BarChart data={weeklyFeedings} barSize={18} onClick={(data) => handleChartClick(data, "feeding")}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
                     <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
                     <YAxis hide />
                     <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="amount" fill={colors.feeding} radius={[6, 6, 0, 0]} opacity={0.85} />
+                    <Bar dataKey="amount" fill={colors.feeding} radius={[6, 6, 0, 0]} opacity={0.85} cursor="pointer" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -188,12 +207,12 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
             {sleepByDay.some((d) => d.hours > 0) && (
               <div style={{ marginTop: 16, height: 120 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={sleepByDay} barSize={18}>
+                  <BarChart data={sleepByDay} barSize={18} onClick={(data) => handleChartClick(data, "sleep")}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
                     <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
                     <YAxis hide />
                     <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="hours" fill={colors.sleep} radius={[6, 6, 0, 0]} opacity={0.85} />
+                    <Bar dataKey="hours" fill={colors.sleep} radius={[6, 6, 0, 0]} opacity={0.85} cursor="pointer" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -278,12 +297,12 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
               <>
                 <div style={{ height: 140 }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={tummyByDay} barSize={22}>
+                    <BarChart data={tummyByDay} barSize={22} onClick={(data) => handleChartClick(data, "tummy")}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
                       <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
                       <YAxis hide />
                       <Tooltip content={<CustomTooltip />} />
-                      <Bar dataKey="minutes" fill={colors.tummy} radius={[6, 6, 0, 0]} opacity={0.8} />
+                      <Bar dataKey="minutes" fill={colors.tummy} radius={[6, 6, 0, 0]} opacity={0.8} cursor="pointer" />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -315,6 +334,17 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
           </SectionCard>
         </div>
       </div>
+
+      {/* Day Activities Modal */}
+      {dayModal && (
+        <DayActivitiesModal
+          day={dayModal.day}
+          type={dayModal.type}
+          data={dayModal.data}
+          onEditEntry={onEditEntry}
+          onClose={() => setDayModal(null)}
+        />
+      )}
     </>
   );
 }

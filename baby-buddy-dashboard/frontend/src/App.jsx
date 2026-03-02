@@ -240,6 +240,7 @@ export default function App() {
             heights={data.heights}
             monthlyFeedings={data.monthlyFeedings}
             monthlySleep={data.monthlySleep}
+            onEditEntry={(type, entry) => setModal({ type, entry })}
           />
         )}
         {activeTab === "notes" && (

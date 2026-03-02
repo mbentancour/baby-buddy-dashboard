@@ -4,9 +4,17 @@ import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
 import { useUnits } from "../../utils/units";
 
-export default function HeightForm({ childId, onDone, onClose }) {
+function toLocalDate(date) {
+  const d = new Date(date);
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+export default function HeightForm({ childId, entry, onDone, onClose }) {
   const units = useUnits();
-  const [height, setHeight] = useState("");
+  const isEdit = !!entry;
+  const [height, setHeight] = useState(entry?.height ? String(entry.height) : "");
+  const [date, setDate] = useState(entry?.date ? toLocalDate(entry.date) : toLocalDate(new Date()));
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -14,10 +22,16 @@ export default function HeightForm({ childId, onDone, onClose }) {
     if (!height) return;
     setSaving(true);
     try {
-      await api.createHeight({
-        child: childId,
+      const data = {
         height: parseFloat(height),
-      });
+        date,
+      };
+      if (isEdit) {
+        await api.updateHeight(entry.id, data);
+      } else {
+        data.child = childId;
+        await api.createHeight(data);
+      }
       onDone();
     } catch {
       setSaving(false);
@@ -25,7 +39,7 @@ export default function HeightForm({ childId, onDone, onClose }) {
   };
 
   return (
-    <Modal title="Log Height" onClose={onClose}>
+    <Modal title={isEdit ? "Edit Height" : "Log Height"} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <FormField label={`Height (${units.length})`}>
           <FormInput
@@ -37,10 +51,19 @@ export default function HeightForm({ childId, onDone, onClose }) {
             max="200"
             step="0.1"
             autoFocus
+            required
+          />
+        </FormField>
+        <FormField label="Date">
+          <FormInput
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
           />
         </FormField>
         <FormButton color={colors.height} disabled={saving || !height}>
-          {saving ? "Saving..." : "Save Height"}
+          {saving ? "Saving..." : isEdit ? "Update Height" : "Save Height"}
         </FormButton>
       </form>
     </Modal>

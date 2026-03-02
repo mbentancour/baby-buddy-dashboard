@@ -109,6 +109,7 @@ export function toGrowthSeries(entries, valueKey) {
         day: "numeric",
       }),
       [valueKey]: parseFloat(e[valueKey]),
+      entry: e,
     }));
 }
 
@@ -198,6 +199,29 @@ export function dailyFeedingTotals(entries, numDays = 30) {
   const result = days.map((d) => ({ date: d.label, amount: Math.round(sums[d.dateStr]) }));
   const firstNonZero = result.findIndex((d) => d.amount > 0);
   return firstNonZero > 0 ? result.slice(firstNonZero) : result;
+}
+
+export function getEntriesForDay(entries, dayLabel, dateKey = "start") {
+  const days = getLast7Days();
+  const targetDay = days.find((d) => d.label === dayLabel);
+  if (!targetDay) return [];
+
+  return entries.filter((e) => {
+    const key = entryDateStr(e[dateKey] || e.time || e.date);
+    return key === targetDay.dateStr;
+  });
+}
+
+export function getEntriesForDate(entries, dateLabel, dateKey = "start") {
+  const targetDate = dateLabel; // Already in format like "Jan 15"
+  return entries.filter((e) => {
+    const entryDate = new Date(e[dateKey] || e.time || e.date);
+    const formattedDate = entryDate.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+    });
+    return formattedDate === targetDate;
+  });
 }
 
 export function dailySleepTotals(entries, numDays = 30) {
