@@ -2,8 +2,6 @@ import { useState } from "react";
 import {
   BarChart,
   Bar,
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   Tooltip,
@@ -15,6 +13,7 @@ import SectionCard from "../components/SectionCard";
 import TimelineItem from "../components/TimelineItem";
 import DiaperBadge from "../components/DiaperBadge";
 import CustomTooltip from "../components/CustomTooltip";
+import ChartDetailBar from "../components/ChartDetailBar";
 import DayActivitiesModal from "../components/DayActivitiesModal";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
@@ -36,6 +35,7 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
   const units = useUnits();
   const [expanded, setExpanded] = useState({});
   const [dayModal, setDayModal] = useState(null);
+  const [selectedBar, setSelectedBar] = useState(null);
   const toggle = (key) => setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const feedingTimeline = toFeedingTimeline(feedings, units.volume);
@@ -63,8 +63,12 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
 
   const handleChartClick = (data, type) => {
     if (!data || !data.activeLabel) return;
-    const day = data.activeLabel;
+    const label = data.activeLabel;
+    const value = data.activePayload?.[0]?.value;
+    setSelectedBar({ type, label, value });
+  };
 
+  const openDayModal = (day, type) => {
     let dayData = [];
     if (type === "feeding") {
       dayData = getEntriesForDay(weeklyFeedingsRaw, day, "start");
@@ -73,7 +77,7 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
     } else if (type === "tummy") {
       dayData = getEntriesForDay(weeklyTummyTimes, day, "start");
     }
-
+    setSelectedBar(null);
     setDayModal({ day, type, data: dayData });
   };
 
@@ -162,17 +166,29 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
               </div>
             )}
             {weeklyFeedings.some((d) => d.amount > 0) && (
-              <div style={{ marginTop: 16, height: 120 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={weeklyFeedings} barSize={18} onClick={(data) => handleChartClick(data, "feeding")}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
-                    <YAxis hide />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="amount" fill={colors.feeding} radius={[6, 6, 0, 0]} opacity={0.85} cursor="pointer" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div style={{ marginTop: 16, height: 120 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={weeklyFeedings} barSize={18} onClick={(data) => handleChartClick(data, "feeding")}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                      <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                      <YAxis hide />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="amount" fill={colors.feeding} radius={[6, 6, 0, 0]} opacity={0.85} cursor="pointer" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                {selectedBar?.type === "feeding" && (
+                  <ChartDetailBar
+                    label={selectedBar.label}
+                    value={selectedBar.value}
+                    unit={units.volume}
+                    color={colors.feeding}
+                    onViewEntries={() => openDayModal(selectedBar.label, "feeding")}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                )}
+              </>
             )}
           </SectionCard>
         </div>
@@ -205,17 +221,29 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
               </div>
             )}
             {sleepByDay.some((d) => d.hours > 0) && (
-              <div style={{ marginTop: 16, height: 120 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={sleepByDay} barSize={18} onClick={(data) => handleChartClick(data, "sleep")}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
-                    <YAxis hide />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="hours" fill={colors.sleep} radius={[6, 6, 0, 0]} opacity={0.85} cursor="pointer" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div style={{ marginTop: 16, height: 120 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={sleepByDay} barSize={18} onClick={(data) => handleChartClick(data, "sleep")}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                      <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                      <YAxis hide />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar dataKey="hours" fill={colors.sleep} radius={[6, 6, 0, 0]} opacity={0.85} cursor="pointer" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                {selectedBar?.type === "sleep" && (
+                  <ChartDetailBar
+                    label={selectedBar.label}
+                    value={selectedBar.value}
+                    unit="h"
+                    color={colors.sleep}
+                    onViewEntries={() => openDayModal(selectedBar.label, "sleep")}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                )}
+              </>
             )}
           </SectionCard>
         </div>
@@ -306,25 +334,36 @@ export default function OverviewTab({ feedings, weeklyFeedings: weeklyFeedingsRa
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-                <div
-                  style={{
-                    marginTop: 12,
-                    display: "flex",
-                    gap: 12,
-                    alignItems: "center",
-                    padding: "10px 14px",
-                    borderRadius: 10,
-                    background: `${colors.tummy}08`,
-                    border: `1px solid ${colors.tummy}15`,
-                  }}
-                >
-                  <Icons.TrendUp />
-                  <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                    Avg{" "}
-                    <strong style={{ color: colors.tummy }}>{Math.round(avgTummy)} min</strong>{" "}
-                    per session
-                  </span>
-                </div>
+                {selectedBar?.type === "tummy" ? (
+                  <ChartDetailBar
+                    label={selectedBar.label}
+                    value={selectedBar.value}
+                    unit="min"
+                    color={colors.tummy}
+                    onViewEntries={() => openDayModal(selectedBar.label, "tummy")}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      marginTop: 12,
+                      display: "flex",
+                      gap: 12,
+                      alignItems: "center",
+                      padding: "10px 14px",
+                      borderRadius: 10,
+                      background: `${colors.tummy}08`,
+                      border: `1px solid ${colors.tummy}15`,
+                    }}
+                  >
+                    <Icons.TrendUp />
+                    <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                      Avg{" "}
+                      <strong style={{ color: colors.tummy }}>{Math.round(avgTummy)} min</strong>{" "}
+                      per session
+                    </span>
+                  </div>
+                )}
               </>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 20 }}>

@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import SectionCard from "../components/SectionCard";
 import CustomTooltip from "../components/CustomTooltip";
+import ChartDetailBar from "../components/ChartDetailBar";
 import DayActivitiesModal from "../components/DayActivitiesModal";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
@@ -21,6 +22,7 @@ import { toGrowthSeries, formatGrowthTick, dailyFeedingTotals, dailySleepTotals,
 export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySleep, onEditEntry }) {
   const units = useUnits();
   const [dayModal, setDayModal] = useState(null);
+  const [selectedBar, setSelectedBar] = useState(null);
   const weightSeries = toGrowthSeries(weights, "weight");
   const heightSeries = toGrowthSeries(heights, "height");
   const feedingSeries = dailyFeedingTotals(monthlyFeedings);
@@ -40,25 +42,23 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
     : 0;
 
   const handleChartClick = (data, type) => {
-    if (!data || !data.activeLabel) return;
-    const dateLabel = data.activeLabel;
+    if (!data || !data.activePayload?.[0]) return;
+    const payload = data.activePayload[0];
+    const label = data.activeLabel;
+    const value = payload.value;
+    const entry = payload.payload?.entry;
+    setSelectedBar({ type, label, value, entry });
+  };
 
+  const openDayModal = (dateLabel, type) => {
     let dayData = [];
     if (type === "feeding") {
       dayData = getEntriesForDate(monthlyFeedings, dateLabel, "start");
     } else if (type === "sleep") {
       dayData = getEntriesForDate(monthlySleep, dateLabel, "start");
     }
-
+    setSelectedBar(null);
     setDayModal({ day: dateLabel, type, data: dayData });
-  };
-
-  const handleMeasurementClick = (data, type) => {
-    if (!data || !data.activePayload || !data.activePayload[0]) return;
-    const clickedPoint = data.activePayload[0].payload;
-    if (clickedPoint.entry) {
-      onEditEntry?.(type, clickedPoint.entry);
-    }
   };
 
   return (
@@ -237,26 +237,38 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
         <div className="fade-in fade-in-5">
           <SectionCard title="Daily Feeding (30d)" icon={<Icons.Bottle />} color={colors.feeding}>
             {feedingSeries.some((d) => d.amount > 0) ? (
-              <div style={{ height: 200 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={feedingSeries} onClick={(data) => handleChartClick(data, "feeding")}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                    <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Area
-                      type="monotone"
-                      dataKey="amount"
-                      stroke={colors.feeding}
-                      strokeWidth={2}
-                      fill={`${colors.feeding}30`}
-                      dot={false}
-                      activeDot={{ r: 4, fill: colors.feeding, cursor: "pointer" }}
-                      cursor="pointer"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div style={{ height: 200 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={feedingSeries} onClick={(data) => handleChartClick(data, "feeding")}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Area
+                        type="monotone"
+                        dataKey="amount"
+                        stroke={colors.feeding}
+                        strokeWidth={2}
+                        fill={`${colors.feeding}30`}
+                        dot={false}
+                        activeDot={{ r: 4, fill: colors.feeding, cursor: "pointer" }}
+                        cursor="pointer"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                {selectedBar?.type === "feeding" && (
+                  <ChartDetailBar
+                    label={selectedBar.label}
+                    value={selectedBar.value}
+                    unit={units.volume}
+                    color={colors.feeding}
+                    onViewEntries={() => openDayModal(selectedBar.label, "feeding")}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                )}
+              </>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 40 }}>
                 No feeding data recorded yet
@@ -269,26 +281,38 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
         <div className="fade-in fade-in-6">
           <SectionCard title="Daily Sleep (30d)" icon={<Icons.Moon />} color={colors.sleep}>
             {sleepSeries.some((d) => d.hours > 0) ? (
-              <div style={{ height: 200 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={sleepSeries} onClick={(data) => handleChartClick(data, "sleep")}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
-                    <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Area
-                      type="monotone"
-                      dataKey="hours"
-                      stroke={colors.sleep}
-                      strokeWidth={2}
-                      fill={`${colors.sleep}30`}
-                      dot={false}
-                      activeDot={{ r: 4, fill: colors.sleep, cursor: "pointer" }}
-                      cursor="pointer"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div style={{ height: 200 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={sleepSeries} onClick={(data) => handleChartClick(data, "sleep")}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} interval="preserveStartEnd" />
+                      <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Area
+                        type="monotone"
+                        dataKey="hours"
+                        stroke={colors.sleep}
+                        strokeWidth={2}
+                        fill={`${colors.sleep}30`}
+                        dot={false}
+                        activeDot={{ r: 4, fill: colors.sleep, cursor: "pointer" }}
+                        cursor="pointer"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                {selectedBar?.type === "sleep" && (
+                  <ChartDetailBar
+                    label={selectedBar.label}
+                    value={selectedBar.value}
+                    unit="h"
+                    color={colors.sleep}
+                    onViewEntries={() => openDayModal(selectedBar.label, "sleep")}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                )}
+              </>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 40 }}>
                 No sleep data recorded yet
@@ -301,24 +325,40 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
         <div className="fade-in fade-in-7">
           <SectionCard title="Weight Trend" icon={<Icons.Weight />} color={colors.growth}>
             {weightSeries.length >= 2 ? (
-              <div style={{ height: 200 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={weightSeries} onClick={(data) => handleMeasurementClick(data, "weight")}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-                    <Tooltip content={<CustomTooltip labelFormatter={formatGrowthTick} />} />
-                    <Line
-                      type="monotone"
-                      dataKey="weight"
-                      stroke={colors.growth}
-                      strokeWidth={2.5}
-                      dot={{ fill: colors.growth, r: 4, cursor: "pointer" }}
-                      activeDot={{ r: 6, cursor: "pointer" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div style={{ height: 200 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={weightSeries} onClick={(data) => handleChartClick(data, "weight")}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                      <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
+                      <Tooltip content={<CustomTooltip labelFormatter={formatGrowthTick} />} />
+                      <Line
+                        type="monotone"
+                        dataKey="weight"
+                        stroke={colors.growth}
+                        strokeWidth={2.5}
+                        dot={{ fill: colors.growth, r: 4, cursor: "pointer" }}
+                        activeDot={{ r: 6, cursor: "pointer" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {selectedBar?.type === "weight" && (
+                  <ChartDetailBar
+                    label={formatGrowthTick(selectedBar.label)}
+                    value={selectedBar.value}
+                    unit={units.weight}
+                    color={colors.growth}
+                    actionLabel="Edit"
+                    onViewEntries={() => {
+                      if (selectedBar.entry) onEditEntry?.("weight", selectedBar.entry);
+                      setSelectedBar(null);
+                    }}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                )}
+              </>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 40 }}>
                 {weightSeries.length === 1 ? "Need at least 2 measurements to show trend" : "No weight data recorded yet"}
@@ -331,24 +371,40 @@ export default function GrowthTab({ weights, heights, monthlyFeedings, monthlySl
         <div className="fade-in fade-in-8">
           <SectionCard title="Height Trend" icon={<Icons.Ruler />} color={colors.height}>
             {heightSeries.length >= 2 ? (
-              <div style={{ height: 200 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={heightSeries} onClick={(data) => handleMeasurementClick(data, "height")}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
-                    <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
-                    <Tooltip content={<CustomTooltip labelFormatter={formatGrowthTick} />} />
-                    <Line
-                      type="monotone"
-                      dataKey="height"
-                      stroke={colors.height}
-                      strokeWidth={2.5}
-                      dot={{ fill: colors.height, r: 4, cursor: "pointer" }}
-                      activeDot={{ r: 6, cursor: "pointer" }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+              <>
+                <div style={{ height: 200 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={heightSeries} onClick={(data) => handleChartClick(data, "height")}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                      <XAxis dataKey="timestamp" type="number" scale="time" domain={["dataMin", "dataMax"]} tickFormatter={formatGrowthTick} tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} domain={["auto", "auto"]} />
+                      <Tooltip content={<CustomTooltip labelFormatter={formatGrowthTick} />} />
+                      <Line
+                        type="monotone"
+                        dataKey="height"
+                        stroke={colors.height}
+                        strokeWidth={2.5}
+                        dot={{ fill: colors.height, r: 4, cursor: "pointer" }}
+                        activeDot={{ r: 6, cursor: "pointer" }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {selectedBar?.type === "height" && (
+                  <ChartDetailBar
+                    label={formatGrowthTick(selectedBar.label)}
+                    value={selectedBar.value}
+                    unit={units.length}
+                    color={colors.height}
+                    actionLabel="Edit"
+                    onViewEntries={() => {
+                      if (selectedBar.entry) onEditEntry?.("height", selectedBar.entry);
+                      setSelectedBar(null);
+                    }}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                )}
+              </>
             ) : (
               <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 40 }}>
                 {heightSeries.length === 1 ? "Need at least 2 measurements to show trend" : "No height data recorded yet"}
