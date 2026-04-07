@@ -145,11 +145,20 @@ if STATIC_DIR.exists():
         )
 
     @app.get("/{path:path}")
-    async def serve_spa(path: str):
+    async def serve_spa(path: str, request: Request):
         file_path = STATIC_DIR / path
         if file_path.is_file() and ".." not in path:
             return FileResponse(file_path)
-        return FileResponse(
-            STATIC_DIR / "index.html",
+
+        # Inject <base> tag with ingress path so relative URLs resolve correctly
+        ingress_path = request.headers.get("X-Ingress-Path", "")
+        index_html = (STATIC_DIR / "index.html").read_text()
+        if ingress_path:
+            base_href = ingress_path.rstrip("/") + "/"
+            index_html = index_html.replace("<head>", f'<head><base href="{base_href}">', 1)
+
+        return Response(
+            content=index_html,
+            media_type="text/html",
             headers={"Cache-Control": "no-cache"},
         )
