@@ -4,7 +4,6 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request, Response, HTTPException
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import httpx
 
@@ -132,18 +131,46 @@ async def proxy_media(path: str):
 # --- Static files (React SPA) ---
 
 if STATIC_DIR.exists():
-    assets_dir = STATIC_DIR / "assets"
-    if assets_dir.exists():
-        app.mount(
-            "/assets", StaticFiles(directory=str(assets_dir)), name="assets"
-        )
-
     @app.get("/{path:path}")
     async def serve_spa(path: str):
         file_path = STATIC_DIR / path
         if file_path.is_file() and ".." not in path:
-            return FileResponse(file_path)
-        return FileResponse(
-            STATIC_DIR / "index.html",
-            headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
-        )
+            # Read file content instead of streaming to avoid ingress proxy issues
+            try:
+                content = file_path.read_bytes()
+                # Determine content type
+                if path.endswith('.js'):
+                    media_type = 'application/javascript'
+                elif path.endswith('.css'):
+                    media_type = 'text/css'
+                elif path.endswith('.json'):
+                    media_type = 'application/json'
+                elif path.endswith('.svg'):
+                    media_type = 'image/svg+xml'
+                elif path.endswith('.png'):
+                    media_type = 'image/png'
+                elif path.endswith('.jpg') or path.endswith('.jpeg'):
+                    media_type = 'image/jpeg'
+                elif path.endswith('.woff2'):
+                    media_type = 'font/woff2'
+                else:
+                    media_type = 'text/html'
+                
+                return Response(
+                    content=content,
+                    media_type=media_type,
+                    headers={"Cache-Control": "no-cache"} if path.endswith('.html') else {}
+                )
+            except Exception:
+                pass
+        
+        # Serve index.html for SPA routing
+        try:
+            index_content = (STATIC_DIR / "index.html").read_bytes()
+            return Response(
+                content=index_content,
+                media_type='text/html',
+                headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+            )
+        except Exception:
+            raise HTTPException(404, "Not found")
