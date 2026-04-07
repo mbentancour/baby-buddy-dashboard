@@ -108,17 +108,12 @@ async def proxy_baby_buddy(path: str, request: Request):
     except httpx.TimeoutException:
         raise HTTPException(504, "Baby Buddy request timed out")
 
-    excluded_headers = {"transfer-encoding", "content-encoding", "content-length", "connection"}
-    response_headers = {
-        k: v
-        for k, v in response.headers.items()
-        if k.lower() not in excluded_headers
-    }
+    content_type = response.headers.get("content-type", "application/json")
 
     return Response(
         content=response.content,
         status_code=response.status_code,
-        headers=response_headers,
+        media_type=content_type,
     )
 
 
