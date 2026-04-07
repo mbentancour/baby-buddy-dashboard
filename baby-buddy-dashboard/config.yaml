@@ -17,7 +17,6 @@ startup: application
 boot: auto
 ingress: true
 ingress_port: 8099
-host_network: false
 panel_icon: "mdi:baby-face-outline"
 panel_title: "Baby Dashboard"
 panel_admin: false
