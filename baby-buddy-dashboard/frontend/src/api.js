@@ -1,9 +1,8 @@
-const APP_ROOT = window.location.pathname.replace(/\/?$/, "");
-const API_BASE = `${APP_ROOT}/api/baby-buddy`;
-const CONFIG_PATH = `${APP_ROOT}/api/config`;
+const API_BASE = new URL("api/baby-buddy/", document.baseURI).pathname;
+const CONFIG_PATH = new URL("api/config", document.baseURI).pathname;
 
 async function request(endpoint, options = {}) {
-  const url = `${API_BASE}/${endpoint}`;
+  const url = `${API_BASE}${endpoint}`;
   const config = {
     headers: { "Content-Type": "application/json" },
     ...options,

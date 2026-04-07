@@ -98,8 +98,12 @@ async def proxy_baby_buddy(path: str, request: Request):
         if k.lower() not in excluded_headers
     }
 
+    # Ensure content-length is set for proxy compatibility
+    content = response.content
+    response_headers["content-length"] = str(len(content))
+
     return Response(
-        content=response.content,
+        content=content,
         status_code=response.status_code,
         headers=response_headers,
         media_type=response.headers.get("content-type"),
@@ -156,10 +160,14 @@ if STATIC_DIR.exists():
                 else:
                     media_type = 'text/html'
                 
+                headers = {"content-length": str(len(content))}
+                if path.endswith('.html'):
+                    headers["Cache-Control"] = "no-cache"
+                
                 return Response(
                     content=content,
                     media_type=media_type,
-                    headers={"Cache-Control": "no-cache"} if path.endswith('.html') else {}
+                    headers=headers,
                 )
             except Exception:
                 pass
@@ -170,7 +178,10 @@ if STATIC_DIR.exists():
             return Response(
                 content=index_content,
                 media_type='text/html',
-                headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
+                headers={
+                    "content-length": str(len(index_content)),
+                    "Cache-Control": "no-cache, no-store, must-revalidate",
+                },
             )
         except Exception:
             raise HTTPException(404, "Not found")
