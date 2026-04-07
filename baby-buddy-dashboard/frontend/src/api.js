@@ -1,5 +1,5 @@
-const API_BASE = "/api/baby-buddy";
-const CONFIG_PATH = "/api/config";
+const API_BASE = "./api/baby-buddy";
+const CONFIG_PATH = "./api/config";
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}/${endpoint}`;

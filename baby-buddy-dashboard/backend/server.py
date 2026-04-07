@@ -1,7 +1,11 @@
 import os
 import json
+import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import FileResponse
@@ -27,6 +31,9 @@ if not BABY_BUDDY_URL:
         UNIT_SYSTEM = opts.get("unit_system", UNIT_SYSTEM)
 
 STATIC_DIR = Path(__file__).parent.parent / "static"
+
+logger.info(f"BABY_BUDDY_URL={BABY_BUDDY_URL!r}")
+logger.info(f"BABY_BUDDY_API_KEY={'set' if BABY_BUDDY_API_KEY else 'NOT SET'}")
 
 # --- App lifecycle ---
 

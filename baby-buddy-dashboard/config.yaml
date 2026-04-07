@@ -15,10 +15,8 @@ arch:
   - i386
 startup: application
 boot: auto
-ingress: false
-host_network: true
-ports:
-  8099/tcp: 8099
+ingress: true
+ingress_port: 8099
 panel_icon: "mdi:baby-face-outline"
 panel_title: "Baby Dashboard"
 panel_admin: false
