@@ -77,6 +77,12 @@ async def get_config():
     return {"refresh_interval": REFRESH_INTERVAL, "demo_mode": DEMO_MODE, "unit_system": UNIT_SYSTEM}
 
 
+@app.get("/api/test")
+async def test_endpoint():
+    """Test endpoint - access through ingress to verify proxy works."""
+    return {"status": "ok", "message": "If you see this through ingress, the proxy works"}
+
+
 @app.api_route(
     "/api/baby-buddy/{path:path}",
     methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
