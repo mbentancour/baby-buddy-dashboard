@@ -44,6 +44,7 @@ async def lifespan(app: FastAPI):
             "Content-Type": "application/json",
         },
         timeout=15.0,
+        limits=httpx.Limits(max_connections=10, max_keepalive_connections=5),
     )
     yield
     await http_client.aclose()
@@ -102,6 +103,7 @@ async def proxy_baby_buddy(path: str, request: Request):
         content=response.content,
         status_code=response.status_code,
         headers=response_headers,
+        media_type=response.headers.get("content-type"),
     )
 
 
@@ -143,5 +145,5 @@ if STATIC_DIR.exists():
             return FileResponse(file_path)
         return FileResponse(
             STATIC_DIR / "index.html",
-            headers={"Cache-Control": "no-cache"},
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate"},
         )
