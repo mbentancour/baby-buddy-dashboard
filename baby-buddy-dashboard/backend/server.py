@@ -60,6 +60,15 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"REQUEST: {request.method} {request.url.path}")
+    logger.info(f"  Headers: X-Ingress-Path={request.headers.get('X-Ingress-Path', 'NOT SET')}")
+    response = await call_next(request)
+    logger.info(f"  RESPONSE: {response.status_code}")
+    return response
+
+
 # --- API routes ---
 
 
