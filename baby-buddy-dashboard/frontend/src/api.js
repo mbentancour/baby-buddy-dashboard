@@ -1,4 +1,6 @@
-const API_BASE = "./api/baby-buddy";
+const APP_ROOT = window.location.pathname.replace(/\/?$/, "");
+const API_BASE = `${APP_ROOT}/api/baby-buddy`;
+const CONFIG_PATH = `${APP_ROOT}/api/config`;
 
 async function request(endpoint, options = {}) {
   const url = `${API_BASE}/${endpoint}`;
@@ -101,5 +103,5 @@ export const api = {
   deleteTimer: (id) => request(`timers/${id}/`, { method: "DELETE" }),
 
   // Config (our backend, not Baby Buddy)
-  getConfig: () => fetch("./api/config").then((r) => r.json()),
+  getConfig: () => fetch(CONFIG_PATH).then((r) => r.json()),
 };
