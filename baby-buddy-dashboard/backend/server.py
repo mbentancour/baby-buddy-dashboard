@@ -5,7 +5,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import httpx
 
 # --- Configuration ---
@@ -92,14 +92,16 @@ async def proxy_baby_buddy(path: str, request: Request):
     except httpx.TimeoutException:
         raise HTTPException(504, "Baby Buddy request timed out")
 
-    content = response.content
-    content_type = response.headers.get("content-type", "application/json")
-
-    return Response(
-        content=content,
-        status_code=response.status_code,
-        media_type=content_type,
-    )
+    # Return as JSONResponse (same as /api/config) for ingress proxy compatibility
+    try:
+        data = response.json()
+        return JSONResponse(content=data, status_code=response.status_code)
+    except Exception:
+        return Response(
+            content=response.content,
+            status_code=response.status_code,
+            media_type=response.headers.get("content-type", "application/octet-stream"),
+        )
 
 
 @app.get("/api/media/{path:path}")
