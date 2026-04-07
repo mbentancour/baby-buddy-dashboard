@@ -1,6 +1,5 @@
 import os
 import json
-import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -8,9 +7,6 @@ from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import httpx
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # --- Configuration ---
 
@@ -32,9 +28,6 @@ if not BABY_BUDDY_URL:
         UNIT_SYSTEM = opts.get("unit_system", UNIT_SYSTEM)
 
 STATIC_DIR = Path(__file__).parent.parent / "static"
-
-logger.info(f"BABY_BUDDY_URL={BABY_BUDDY_URL!r}")
-logger.info(f"BABY_BUDDY_API_KEY={'set' if BABY_BUDDY_API_KEY else 'NOT SET'}")
 
 # --- App lifecycle ---
 
@@ -60,27 +53,12 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    logger.info(f"REQUEST: {request.method} {request.url.path}")
-    logger.info(f"  Headers: X-Ingress-Path={request.headers.get('X-Ingress-Path', 'NOT SET')}")
-    response = await call_next(request)
-    logger.info(f"  RESPONSE: {response.status_code}")
-    return response
-
-
 # --- API routes ---
 
 
 @app.get("/api/config")
 async def get_config():
     return {"refresh_interval": REFRESH_INTERVAL, "demo_mode": DEMO_MODE, "unit_system": UNIT_SYSTEM}
-
-
-@app.get("/api/test")
-async def test_endpoint():
-    """Test endpoint - access through ingress to verify proxy works."""
-    return {"status": "ok", "message": "If you see this through ingress, the proxy works"}
 
 
 @app.api_route(
@@ -114,10 +92,11 @@ async def proxy_baby_buddy(path: str, request: Request):
     except httpx.TimeoutException:
         raise HTTPException(504, "Baby Buddy request timed out")
 
+    content = response.content
     content_type = response.headers.get("content-type", "application/json")
 
     return Response(
-        content=response.content,
+        content=content,
         status_code=response.status_code,
         media_type=content_type,
     )
