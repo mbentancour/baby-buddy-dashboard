@@ -5,6 +5,7 @@ import { UnitContext } from "./utils/units";
 import { Icons } from "./components/Icons";
 import { colors } from "./utils/colors";
 import { getAge, formatElapsed } from "./utils/formatters";
+import { t } from "./locales";
 import OverviewTab from "./tabs/OverviewTab";
 import GrowthTab from "./tabs/GrowthTab";
 import NotesTab from "./tabs/NotesTab";
@@ -20,46 +21,103 @@ import TimerButton from "./components/TimerButton";
 import "./styles.css";
 
 const TABS = [
-  { id: "overview", label: "Overview", icon: <Icons.Activity /> },
-  { id: "growth", label: "Growth", icon: <Icons.TrendUp /> },
-  { id: "notes", label: "Notes", icon: <Icons.StickyNote /> },
+  { id: "overview", label: t("tab.overview"), icon: <Icons.Activity /> },
+  { id: "growth", label: t("tab.growth"), icon: <Icons.TrendUp /> },
+  { id: "notes", label: t("tab.notes"), icon: <Icons.StickyNote /> },
 ];
 
 const ACTION_GROUPS = [
   {
-    label: "Track",
+    label: t("group.track"),
     actions: [
-      { id: "feeding", label: "Feeding", icon: <Icons.Bottle />, color: colors.feeding },
-      { id: "sleep", label: "Sleep", icon: <Icons.Moon />, color: colors.sleep },
-      { id: "diaper", label: "Diaper", icon: <Icons.Droplet />, color: colors.diaper },
-      { id: "tummy", label: "Tummy", icon: <Icons.Sun />, color: colors.tummy },
+      {
+        id: "feeding",
+        label: t("action.feeding"),
+        icon: <Icons.Bottle />,
+        color: colors.feeding,
+      },
+      {
+        id: "sleep",
+        label: t("action.sleep"),
+        icon: <Icons.Moon />,
+        color: colors.sleep,
+      },
+      {
+        id: "diaper",
+        label: t("action.diaper"),
+        icon: <Icons.Droplet />,
+        color: colors.diaper,
+      },
+      {
+        id: "tummy",
+        label: t("action.tummy"),
+        icon: <Icons.Sun />,
+        color: colors.tummy,
+      },
     ],
   },
   {
-    label: "Measure",
+    label: t("group.measure"),
     actions: [
-      { id: "temp", label: "Temp", icon: <Icons.Temp />, color: colors.temp },
-      { id: "weight", label: "Weight", icon: <Icons.Weight />, color: colors.growth },
-      { id: "height", label: "Height", icon: <Icons.Ruler />, color: colors.height },
+      {
+        id: "temp",
+        label: t("action.temp"),
+        icon: <Icons.Temp />,
+        color: colors.temp,
+      },
+      {
+        id: "weight",
+        label: t("action.weight"),
+        icon: <Icons.Weight />,
+        color: colors.growth,
+      },
+      {
+        id: "height",
+        label: t("action.height"),
+        icon: <Icons.Ruler />,
+        color: colors.height,
+      },
     ],
   },
   {
-    label: "Note",
+    label: t("group.note"),
     actions: [
-      { id: "note", label: "Note", icon: <Icons.StickyNote />, color: colors.note },
+      {
+        id: "note",
+        label: t("action.note"),
+        icon: <Icons.StickyNote />,
+        color: colors.note,
+      },
     ],
   },
 ];
 
 const TIMER_TYPES = [
-  { id: "feeding", label: "Feeding", icon: <Icons.Bottle />, color: colors.feeding },
-  { id: "sleep", label: "Sleep", icon: <Icons.Moon />, color: colors.sleep },
-  { id: "tummy", label: "Tummy Time", icon: <Icons.Sun />, color: colors.tummy },
+  {
+    id: "feeding",
+    label: t("action.feeding"),
+    icon: <Icons.Bottle />,
+    color: colors.feeding,
+  },
+  {
+    id: "sleep",
+    label: t("action.sleep"),
+    icon: <Icons.Moon />,
+    color: colors.sleep,
+  },
+  {
+    id: "tummy",
+    label: t("action.tummyTime"),
+    icon: <Icons.Sun />,
+    color: colors.tummy,
+  },
 ];
 
 function toLocalDatetime(date) {
   const pad = (n) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 function timerNameToType(name) {
@@ -73,6 +131,7 @@ function timerNameToType(name) {
 export default function App() {
   const data = useBabyData();
   const timer = useTimers(data.timers, data.child?.id);
+
   const [activeTab, setActiveTab] = useState("overview");
   const [modal, setModal] = useState(null);
   const [showActions, setShowActions] = useState(false);
@@ -81,6 +140,7 @@ export default function App() {
   const [editingTimerId, setEditingTimerId] = useState(null);
 
   const closeModal = () => setModal(null);
+
   const handleFormDone = () => {
     closeModal();
     data.refetch();
@@ -90,47 +150,86 @@ export default function App() {
     return (
       <div className="app-loading">
         <div className="loading-spinner" />
-        <span style={{ color: "var(--text-muted)", fontSize: 14 }}>Loading...</span>
+        <span
+          style={{
+            color: "var(--text-muted)",
+            fontSize: 14,
+          }}
+        >
+          {t("status.loading")}
+        </span>
       </div>
     );
   }
 
   return (
     <UnitContext.Provider value={data.unitSystem}>
-    <div className="app">
-      {/* Header */}
-      <header className="app-header fade-in">
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <div className="avatar">
-            {data.child?.picture ? (
-              <img src={data.child.picture} alt={data.child.first_name} className="avatar-img" />
-            ) : (
-              <Icons.Baby />
-            )}
+      <div className="app">
+        {/* Header */}
+        <header className="app-header fade-in">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+            }}
+          >
+            <div className="avatar">
+              {data.child?.picture ? (
+                <img
+                  src={data.child.picture}
+                  alt={data.child.first_name}
+                  className="avatar-img"
+                />
+              ) : (
+                <Icons.Baby />
+              )}
+            </div>
+
+            <div>
+              <h1 className="baby-name">
+                {data.child?.first_name || t("general.baby")}
+              </h1>
+
+              {data.child?.birth_date && (
+                <span className="baby-age">
+                  {getAge(data.child.birth_date)}
+                </span>
+              )}
+            </div>
           </div>
-          <div>
-            <h1 className="baby-name">
-              {data.child?.first_name || "Baby"}
-            </h1>
-            {data.child?.birth_date && (
-              <span className="baby-age">{getAge(data.child.birth_date)}</span>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            {data.error && (
+              <span className="sync-error">
+                {t("status.connectionError")}
+              </span>
             )}
+
+            {data.lastSync && !data.error && (
+              <span className="sync-time">
+                {data.lastSync.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            )}
+
+            <button
+              className="refresh-btn"
+              onClick={data.refetch}
+              title={t("button.refresh")}
+            >
+              <Icons.Activity />
+            </button>
           </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {data.error && (
-            <span className="sync-error">Connection error</span>
-          )}
-          {data.lastSync && !data.error && (
-            <span className="sync-time">
-              {data.lastSync.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-            </span>
-          )}
-          <button className="refresh-btn" onClick={data.refetch} title="Refresh">
-            <Icons.Activity />
-          </button>
-        </div>
-      </header>
+        </header>
 
       {/* Child Switcher (only when 2+ children) */}
       {data.children.length >= 2 && (
@@ -138,7 +237,9 @@ export default function App() {
           {data.children.map((c) => (
             <button
               key={c.id}
-              className={`child-chip${c.id === data.child?.id ? " child-chip-active" : ""}`}
+              className={`child-chip${
+                c.id === data.child?.id ? " child-chip-active" : ""
+              }`}
               onClick={() => data.selectChild(c.id)}
             >
               {c.first_name}
@@ -150,14 +251,33 @@ export default function App() {
       {/* Active Timer Bars */}
       {timer.activeTimers.map((t) => (
         <div key={t.id} className="timer-bar fade-in">
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
             <span className="timer-pulse" />
             <Icons.Timer />
-            <span style={{ fontSize: 13, fontWeight: 500 }}>
+
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
               {t.name}
             </span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
             {editingTimerId === t.id ? (
               <input
                 type="datetime-local"
@@ -166,36 +286,47 @@ export default function App() {
                 autoFocus
                 onBlur={(e) => {
                   if (e.target.value) {
-                    timer.editTimer(t.id, `${e.target.value}:00`);
+                    timer.editTimer(
+                      t.id,
+                      `${e.target.value}:00`
+                    );
                   }
                   setEditingTimerId(null);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") e.target.blur();
-                  if (e.key === "Escape") setEditingTimerId(null);
+                  if (e.key === "Escape") {
+                    setEditingTimerId(null);
+                  }
                 }}
               />
             ) : (
               <span
                 className="timer-elapsed"
                 style={{ cursor: "pointer" }}
-                title="Click to edit start time"
+                title={t("tooltip.editStartTime")}
                 onClick={() => setEditingTimerId(t.id)}
               >
                 {formatElapsed(timer.elapsedMap[t.id] || 0)}
               </span>
             )}
+
             <button
               className="timer-save-btn"
               onClick={async () => {
                 const stopped = await timer.stopTimer(t.id);
+
                 if (stopped) {
-                  setModal({ type: timerNameToType(stopped.name), timerId: stopped.id });
+                  setModal({
+                    type: timerNameToType(stopped.name),
+                    timerId: stopped.id,
+                  });
                 }
               }}
             >
-              Save
+              {t("button.save")}
             </button>
+
             <button
               className="timer-discard-btn"
               onClick={() => timer.discardTimer(t.id)}
@@ -211,7 +342,9 @@ export default function App() {
         {TABS.map((tab) => (
           <button
             key={tab.id}
-            className={`tab-btn ${activeTab === tab.id ? "tab-active" : ""}`}
+            className={`tab-btn ${
+              activeTab === tab.id ? "tab-active" : ""
+            }`}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.icon}
@@ -231,22 +364,30 @@ export default function App() {
             changes={data.changes}
             tummyTimes={data.tummyTimes}
             weeklyTummyTimes={data.weeklyTummyTimes}
-            onEditEntry={(type, entry) => setModal({ type, entry })}
+            onEditEntry={(type, entry) =>
+              setModal({ type, entry })
+            }
           />
         )}
+
         {activeTab === "growth" && (
           <GrowthTab
             weights={data.weights}
             heights={data.heights}
             monthlyFeedings={data.monthlyFeedings}
             monthlySleep={data.monthlySleep}
-            onEditEntry={(type, entry) => setModal({ type, entry })}
+            onEditEntry={(type, entry) =>
+              setModal({ type, entry })
+            }
           />
         )}
+
         {activeTab === "notes" && (
           <NotesTab
             notes={data.notes}
-            onEditEntry={(type, entry) => setModal({ type, entry })}
+            onEditEntry={(type, entry) =>
+              setModal({ type, entry })
+            }
           />
         )}
       </main>
@@ -257,14 +398,22 @@ export default function App() {
           <div className="fab-menu fade-in">
             {ACTION_GROUPS.map((group) => {
               const isOpen = expandedGroup === group.label;
+
               return (
                 <div key={group.label} className="fab-group">
                   <button
-                    className={`fab-group-label${isOpen ? " fab-group-label-active" : ""}`}
-                    onClick={() => setExpandedGroup(isOpen ? null : group.label)}
+                    className={`fab-group-label${
+                      isOpen ? " fab-group-label-active" : ""
+                    }`}
+                    onClick={() =>
+                      setExpandedGroup(
+                        isOpen ? null : group.label
+                      )
+                    }
                   >
                     {group.label}
                   </button>
+
                   {isOpen && (
                     <div className="fab-group-items">
                       {group.actions.map((action) => (
@@ -278,11 +427,17 @@ export default function App() {
                         >
                           <span
                             className="fab-action-icon"
-                            style={{ background: `${action.color}18`, color: action.color }}
+                            style={{
+                              background: `${action.color}18`,
+                              color: action.color,
+                            }}
                           >
                             {action.icon}
                           </span>
-                          <span className="fab-action-label">{action.label}</span>
+
+                          <span className="fab-action-label">
+                            {action.label}
+                          </span>
                         </button>
                       ))}
                     </div>
@@ -292,8 +447,12 @@ export default function App() {
             })}
           </div>
         )}
+
         {showTimerPicker && (
-          <div className="fab-menu fade-in" style={{ right: 76 }}>
+          <div
+            className="fab-menu fade-in"
+            style={{ right: 76 }}
+          >
             {TIMER_TYPES.map((t) => (
               <button
                 key={t.id}
@@ -305,17 +464,24 @@ export default function App() {
               >
                 <span
                   className="fab-action-icon"
-                  style={{ background: `${t.color}18`, color: t.color }}
+                  style={{
+                    background: `${t.color}18`,
+                    color: t.color,
+                  }}
                 >
                   {t.icon}
                 </span>
-                <span className="fab-action-label">{t.label}</span>
+
+                <span className="fab-action-label">
+                  {t.label}
+                </span>
               </button>
             ))}
           </div>
         )}
+
         <TimerButton
-          label="Timer"
+          label={t("button.timer")}
           icon={<Icons.Timer />}
           color={colors.feeding}
           active={false}
@@ -324,12 +490,29 @@ export default function App() {
             setShowActions(false);
           }}
         />
+
         <button
           className="fab-btn"
-          style={{ background: showActions ? "var(--text-muted)" : colors.feeding }}
-          onClick={() => { setShowActions(!showActions); setShowTimerPicker(false); setExpandedGroup("Track"); }}
+          style={{
+            background: showActions
+              ? "var(--text-muted)"
+              : colors.feeding,
+          }}
+          onClick={() => {
+            setShowActions(!showActions);
+            setShowTimerPicker(false);
+            setExpandedGroup("Track");
+          }}
         >
-          <span style={{ transform: showActions ? "rotate(45deg)" : "none", transition: "transform 0.2s", display: "flex" }}>
+          <span
+            style={{
+              transform: showActions
+                ? "rotate(45deg)"
+                : "none",
+              transition: "transform 0.2s",
+              display: "flex",
+            }}
+          >
             <Icons.Plus />
           </span>
         </button>
@@ -345,6 +528,7 @@ export default function App() {
           onClose={closeModal}
         />
       )}
+
       {modal?.type === "sleep" && (
         <SleepForm
           childId={data.child?.id}
@@ -354,6 +538,7 @@ export default function App() {
           onClose={closeModal}
         />
       )}
+
       {modal?.type === "diaper" && (
         <DiaperForm
           childId={data.child?.id}
@@ -362,6 +547,7 @@ export default function App() {
           onClose={closeModal}
         />
       )}
+
       {modal?.type === "temp" && (
         <TemperatureForm
           childId={data.child?.id}
@@ -370,6 +556,7 @@ export default function App() {
           onClose={closeModal}
         />
       )}
+
       {modal?.type === "tummy" && (
         <TummyTimeForm
           childId={data.child?.id}
@@ -379,6 +566,7 @@ export default function App() {
           onClose={closeModal}
         />
       )}
+
       {modal?.type === "weight" && (
         <WeightForm
           childId={data.child?.id}
@@ -387,6 +575,7 @@ export default function App() {
           onClose={closeModal}
         />
       )}
+
       {modal?.type === "height" && (
         <HeightForm
           childId={data.child?.id}
@@ -395,6 +584,7 @@ export default function App() {
           onClose={closeModal}
         />
       )}
+
       {modal?.type === "note" && (
         <NoteForm
           childId={data.child?.id}
