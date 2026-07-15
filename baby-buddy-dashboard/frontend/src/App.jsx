@@ -518,8 +518,74 @@ export default function App() {
         </button>
       </div>
 
-      {/* Modals */}
-      ...
+{/* Modals */}
+      {modal?.type === "feeding" && (
+        <FeedingForm
+          childId={data.child?.id}
+          timerId={modal.timerId}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "sleep" && (
+        <SleepForm
+          childId={data.child?.id}
+          timerId={modal.timerId}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "diaper" && (
+        <DiaperForm
+          childId={data.child?.id}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "temp" && (
+        <TemperatureForm
+          childId={data.child?.id}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "tummy" && (
+        <TummyTimeForm
+          childId={data.child?.id}
+          timerId={modal.timerId}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "weight" && (
+        <WeightForm
+          childId={data.child?.id}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "height" && (
+        <HeightForm
+          childId={data.child?.id}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "note" && (
+        <NoteForm
+          childId={data.child?.id}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
     </div>
     </UnitContext.Provider>
   );
