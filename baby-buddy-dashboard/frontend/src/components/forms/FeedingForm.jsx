@@ -3,21 +3,22 @@ import { api } from "../../api";
 import Modal, { FormField, FormSelect, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
 import { useUnits } from "../../utils/units";
+import { t } from "../../locales";
 
 const TYPES = [
-  { value: "breast milk", label: "Breast Milk" },
-  { value: "formula", label: "Formula" },
-  { value: "fortified breast milk", label: "Fortified Breast Milk" },
-  { value: "solid food", label: "Solid Food" },
+  { value: "breast milk", label: t("feedingForm.types.breastMilk") },
+  { value: "formula", label: t("feedingForm.types.formula") },
+  { value: "fortified breast milk", label: t("feedingForm.types.fortifiedBreastMilk") },
+  { value: "solid food", label: t("feedingForm.types.solidFood") },
 ];
 
 const METHODS = [
-  { value: "bottle", label: "Bottle" },
-  { value: "left breast", label: "Left Breast" },
-  { value: "right breast", label: "Right Breast" },
-  { value: "both breasts", label: "Both Breasts" },
-  { value: "parent fed", label: "Parent Fed" },
-  { value: "self fed", label: "Self Fed" },
+  { value: "bottle", label: t("feedingForm.methods.bottle") },
+  { value: "left breast", label: t("feedingForm.methods.leftBreast") },
+  { value: "right breast", label: t("feedingForm.methods.rightBreast") },
+  { value: "both breasts", label: t("feedingForm.methods.bothBreasts") },
+  { value: "parent fed", label: t("feedingForm.methods.parentFed") },
+  { value: "self fed", label: t("feedingForm.methods.selfFed") },
 ];
 
 function toLocalDatetime(date) {
@@ -66,20 +67,20 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
   };
 
   return (
-    <Modal title={isEdit ? "Edit Feeding" : "Log Feeding"} onClose={onClose}>
+    <Modal title={isEdit ? t("feedingForm.editTitle") : t("feedingForm.logTitle")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <FormField label="Type">
+        <FormField label={t("feedingForm.type")}>
           <FormSelect options={TYPES} value={type} onChange={(e) => setType(e.target.value)} />
         </FormField>
-        <FormField label="Method">
+        <FormField label={t("feedingForm.method")}>
           <FormSelect options={METHODS} value={method} onChange={(e) => setMethod(e.target.value)} />
         </FormField>
-        <FormField label={`Amount (${units.volume})`}>
-          <FormInput type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Optional" min="0" step="5" />
+        <FormField label={t("feedingForm.amount", { unit: units.volume })}>
+          <FormInput type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={t("form.optional")} min="0" step="5" />
         </FormField>
         {(isEdit || !timerId) && (
           <>
-            <FormField label="Start">
+            <FormField label={t("form.start")}>
               <FormInput
                 type="datetime-local"
                 value={start}
@@ -87,7 +88,7 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
                 required
               />
             </FormField>
-            <FormField label="End">
+            <FormField label={t("form.end")}>
               <FormInput
                 type="datetime-local"
                 value={end}
@@ -97,16 +98,16 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
             </FormField>
           </>
         )}
-        <FormField label="Notes">
+        <FormField label={t("form.notes")}>
           <FormInput
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Optional"
+            placeholder={t("form.optional")}
           />
         </FormField>
         <FormButton color={colors.feeding} disabled={saving}>
-          {saving ? "Saving..." : isEdit ? "Update Feeding" : "Save Feeding"}
+          {saving ? t("form.saving") : isEdit ? t("feedingForm.update") : t("feedingForm.save")}
         </FormButton>
       </form>
     </Modal>

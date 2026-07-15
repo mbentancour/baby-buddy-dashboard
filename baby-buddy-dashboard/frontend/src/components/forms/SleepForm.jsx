@@ -3,6 +3,7 @@ import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 
 import { colors } from "../../utils/colors";
+import { t } from "../../locales";
 
 function toLocalDatetime(date) {
   const pad = (n) => String(n).padStart(2, "0");
@@ -47,15 +48,15 @@ export default function SleepForm({ childId, timerId, entry, onDone, onClose }) 
   };
 
   return (
-    <Modal title={isEdit ? "Edit Sleep" : "Log Sleep"} onClose={onClose}>
+    <Modal title={isEdit ? t("sleepForm.editTitle") : t("sleepForm.logTitle")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         {!isEdit && timerId ? (
           <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>
-            The timer's start and end times will be used for this sleep entry.
+            {t("sleepForm.timerHint")}
           </p>
         ) : (
           <>
-            <FormField label="Start">
+            <FormField label={t("form.start")}>
               <FormInput
                 type="datetime-local"
                 value={start}
@@ -63,7 +64,7 @@ export default function SleepForm({ childId, timerId, entry, onDone, onClose }) 
                 required
               />
             </FormField>
-            <FormField label="End">
+            <FormField label={t("form.end")}>
               <FormInput
                 type="datetime-local"
                 value={end}
@@ -73,16 +74,16 @@ export default function SleepForm({ childId, timerId, entry, onDone, onClose }) 
             </FormField>
           </>
         )}
-        <FormField label="Notes">
+        <FormField label={t("form.notes")}>
           <FormInput
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Optional"
+            placeholder={t("form.optional")}
           />
         </FormField>
         <FormButton color={colors.sleep} disabled={saving}>
-          {saving ? "Saving..." : isEdit ? "Update Sleep" : "Save Sleep"}
+          {saving ? t("form.saving") : isEdit ? t("sleepForm.update") : t("sleepForm.save")}
         </FormButton>
       </form>
     </Modal>

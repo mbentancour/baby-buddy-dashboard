@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
+import { t } from "../../locales";
 
 function toLocalDatetime(date) {
   const pad = (n) => String(n).padStart(2, "0");
@@ -43,16 +44,16 @@ export default function TummyTimeForm({ childId, timerId, entry, onDone, onClose
   };
 
   return (
-    <Modal title={isEdit ? "Edit Tummy Time" : "Log Tummy Time"} onClose={onClose}>
+    <Modal title={isEdit ? t("tummyTimeForm.editTitle") : t("tummyTimeForm.logTitle")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         {!isEdit && timerId ? (
           <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 16 }}>
-            The timer's start and end times will be used for this tummy time entry.
+            {t("tummyTimeForm.timerHint")}
           </p>
         ) : null}
         {(isEdit || !timerId) && (
           <>
-            <FormField label="Start">
+            <FormField label={t("form.start")}>
               <FormInput
                 type="datetime-local"
                 value={start}
@@ -60,7 +61,7 @@ export default function TummyTimeForm({ childId, timerId, entry, onDone, onClose
                 required
               />
             </FormField>
-            <FormField label="End">
+            <FormField label={t("form.end")}>
               <FormInput
                 type="datetime-local"
                 value={end}
@@ -70,15 +71,15 @@ export default function TummyTimeForm({ childId, timerId, entry, onDone, onClose
             </FormField>
           </>
         )}
-        <FormField label="Milestone (optional)">
+        <FormField label={t("tummyTimeForm.milestone")}>
           <FormInput
             value={milestone}
             onChange={(e) => setMilestone(e.target.value)}
-            placeholder="e.g., Lifted head"
+            placeholder={t("tummyTimeForm.milestonePlaceholder")}
           />
         </FormField>
         <FormButton color={colors.tummy} disabled={saving}>
-          {saving ? "Saving..." : isEdit ? "Update Tummy Time" : "Save Tummy Time"}
+          {saving ? t("form.saving") : isEdit ? t("tummyTimeForm.update") : t("tummyTimeForm.save")}
         </FormButton>
       </form>
     </Modal>

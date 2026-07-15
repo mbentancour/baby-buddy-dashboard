@@ -3,6 +3,7 @@ import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
 import { useUnits } from "../../utils/units";
+import { t } from "../../locales";
 
 export default function TemperatureForm({ childId, onDone, onClose }) {
   const units = useUnits();
@@ -25,9 +26,9 @@ export default function TemperatureForm({ childId, onDone, onClose }) {
   };
 
   return (
-    <Modal title="Log Temperature" onClose={onClose}>
+    <Modal title={t("temperatureForm.logTitle")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <FormField label={`Temperature (${units.temp})`}>
+        <FormField label={t("temperatureForm.label", { unit: units.temp })}>
           <FormInput
             type="number"
             value={temp}
@@ -40,7 +41,7 @@ export default function TemperatureForm({ childId, onDone, onClose }) {
           />
         </FormField>
         <FormButton color={colors.temp} disabled={saving || !temp}>
-          {saving ? "Saving..." : "Save Temperature"}
+          {saving ? t("form.saving") : t("temperatureForm.save")}
         </FormButton>
       </form>
     </Modal>

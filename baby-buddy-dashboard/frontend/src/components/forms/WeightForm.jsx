@@ -3,6 +3,7 @@ import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
 import { useUnits } from "../../utils/units";
+import { t } from "../../locales";
 
 function toLocalDate(date) {
   const d = new Date(date);
@@ -39,9 +40,12 @@ export default function WeightForm({ childId, entry, onDone, onClose }) {
   };
 
   return (
-    <Modal title={isEdit ? "Edit Weight" : "Log Weight"} onClose={onClose}>
+    <Modal
+      title={isEdit ? t("weightForm.editTitle") : t("weightForm.logTitle")}
+      onClose={onClose}
+    >
       <form onSubmit={handleSubmit}>
-        <FormField label={`Weight (${units.weight})`}>
+        <FormField label={t("weightForm.label", { unit: units.weight })}>
           <FormInput
             type="number"
             value={weight}
@@ -54,7 +58,7 @@ export default function WeightForm({ childId, entry, onDone, onClose }) {
             required
           />
         </FormField>
-        <FormField label="Date">
+        <FormField label={t("form.date")}>
           <FormInput
             type="date"
             value={date}
@@ -63,7 +67,7 @@ export default function WeightForm({ childId, entry, onDone, onClose }) {
           />
         </FormField>
         <FormButton color={colors.growth} disabled={saving || !weight}>
-          {saving ? "Saving..." : isEdit ? "Update Weight" : "Save Weight"}
+          {saving ? t("form.saving") : isEdit ? t("weightForm.update") : t("weightForm.save")}
         </FormButton>
       </form>
     </Modal>

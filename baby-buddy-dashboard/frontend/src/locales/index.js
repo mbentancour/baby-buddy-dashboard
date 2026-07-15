@@ -14,20 +14,27 @@ function getNestedValue(obj, path) {
   return path.split(".").reduce((value, key) => value?.[key], obj);
 }
 
-export function t(key) {
+export function t(key, params) {
   // Aktuelle Sprache
-  const translated = getNestedValue(languages[currentLanguage], key);
-  if (translated !== undefined) {
-    return translated;
-  }
+  let translated = getNestedValue(languages[currentLanguage], key);
 
   // Fallback auf Englisch
-  const fallback = getNestedValue(languages.en, key);
-  if (fallback !== undefined) {
-    return fallback;
+  if (translated === undefined) {
+    translated = getNestedValue(languages.en, key);
   }
 
   // Fehlenden Key im Debug sichtbar machen
-  console.warn(`Missing translation: ${key}`);
-  return key;
+  if (translated === undefined) {
+    console.warn(`Missing translation: ${key}`);
+    return key;
+  }
+
+  // Platzhalter wie {count}, {wet}, {solid} ersetzen
+  if (params) {
+    Object.entries(params).forEach(([paramKey, value]) => {
+      translated = translated.replaceAll(`{${paramKey}}`, value);
+    });
+  }
+
+  return translated;
 }

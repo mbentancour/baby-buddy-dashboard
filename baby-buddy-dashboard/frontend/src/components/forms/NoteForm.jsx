@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton } from "../Modal";
 import { colors } from "../../utils/colors";
+import { t } from "../../locales";
 
 function toLocalDatetime(date) {
   const pad = (n) => String(n).padStart(2, "0");
@@ -33,9 +34,12 @@ export default function NoteForm({ childId, entry, onDone, onClose }) {
   };
 
   return (
-    <Modal title={isEdit ? "Edit Note" : "Add Note"} onClose={onClose}>
+    <Modal
+      title={isEdit ? t("noteForm.editTitle") : t("noteForm.addTitle")}
+      onClose={onClose}
+    >
       <form onSubmit={handleSubmit}>
-        <FormField label="Time">
+        <FormField label={t("form.time")}>
           <FormInput
             type="datetime-local"
             value={time}
@@ -43,7 +47,7 @@ export default function NoteForm({ childId, entry, onDone, onClose }) {
             required
           />
         </FormField>
-        <FormField label="Note">
+        <FormField label={t("action.note")}>
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
@@ -64,7 +68,7 @@ export default function NoteForm({ childId, entry, onDone, onClose }) {
           />
         </FormField>
         <FormButton color={colors.note} disabled={saving || !note.trim()}>
-          {saving ? "Saving..." : isEdit ? "Update Note" : "Save Note"}
+          {saving ? t("form.saving") : isEdit ? t("noteForm.update") : t("noteForm.save")}
         </FormButton>
       </form>
     </Modal>
