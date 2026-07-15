@@ -48,6 +48,8 @@ export default {
 
   overview: {
     feedings: "Feedings",
+    feeding: "feeding",
+
     sleep: "Sleep",
     diapers: "Diapers",
     tummyTime: "Tummy Time",
@@ -57,6 +59,20 @@ export default {
     diaperChanges: "Diaper Changes",
 
     last24Hours: "Last 24 Hours",
+
+    today: "today",
+
+    wet: "Wet",
+    solid: "Solid",
+    both: "Both",
+
+    total: "Total",
+
+    show: "Show",
+    more: "more",
+    showLess: "Show less",
+
+    session: "session",
 
     feedingsToday: "{count} feedings today",
     sessionsToday: "{count} sessions today",
@@ -70,8 +86,11 @@ export default {
 
     nap: "Nap",
 
+    avg: "Avg",
     average: "Avg",
     perSession: "per session",
+
+    to: "to",
   },
 
   status: {
@@ -111,9 +130,9 @@ export default {
     noHeightData: "No height data recorded yet",
 
     needTwoWeightMeasurements:
-    "Need at least 2 measurements to show the trend",
+      "Need at least 2 measurements to show the trend",
 
     needTwoHeightMeasurements:
-    "Need at least 2 measurements to show the trend",
+      "Need at least 2 measurements to show the trend",
   },
 };

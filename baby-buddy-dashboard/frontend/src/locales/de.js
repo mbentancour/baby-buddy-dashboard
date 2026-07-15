@@ -43,11 +43,14 @@ export default {
 
   notes: {
     title: "Notizen",
-    noNotes: "Noch keine Notizen vorhanden – tippe auf +, um eine hinzuzufügen.",
+    noNotes:
+      "Noch keine Notizen vorhanden – tippe auf +, um eine hinzuzufügen.",
   },
 
   overview: {
     feedings: "Fütterungen",
+    feeding: "Fütterung",
+
     sleep: "Schlaf",
     diapers: "Windeln",
     tummyTime: "Bauchlage",
@@ -57,6 +60,20 @@ export default {
     diaperChanges: "Windelwechsel",
 
     last24Hours: "Letzte 24 Stunden",
+
+    today: "heute",
+
+    wet: "Nass",
+    solid: "Stuhl",
+    both: "Beides",
+
+    total: "Gesamt",
+
+    show: "Zeige",
+    more: "mehr",
+    showLess: "Weniger anzeigen",
+
+    session: "Einheit",
 
     feedingsToday: "{count} Fütterungen heute",
     sessionsToday: "{count} Einheiten heute",
@@ -70,8 +87,11 @@ export default {
 
     nap: "Nickerchen",
 
+    avg: "Ø",
     average: "Ø",
     perSession: "pro Einheit",
+
+    to: "bis",
   },
 
   status: {
@@ -111,10 +131,9 @@ export default {
     noHeightData: "Noch keine Größendaten vorhanden",
 
     needTwoWeightMeasurements:
-    "Mindestens zwei Messungen sind erforderlich, um einen Verlauf anzuzeigen.",
+      "Mindestens zwei Messungen sind erforderlich, um einen Verlauf anzuzeigen.",
 
     needTwoHeightMeasurements:
-    "Mindestens zwei Messungen sind erforderlich, um einen Verlauf anzuzeigen.",
+      "Mindestens zwei Messungen sind erforderlich, um einen Verlauf anzuzeigen.",
   },
-
 };

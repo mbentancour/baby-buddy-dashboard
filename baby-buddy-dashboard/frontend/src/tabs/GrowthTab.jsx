@@ -19,7 +19,7 @@ import DayActivitiesModal from "../components/DayActivitiesModal";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
 import { useUnits } from "../utils/units";
-import { t } from "../locales";
+import { t as translate } from "../locales";
 
 import {
   toGrowthSeries,
@@ -50,7 +50,6 @@ export default function GrowthTab({
   const latestWeight = weights[0];
   const latestHeight = heights[0];
 
-  // Compute averages for stat cards
   const feedingDays = feedingSeries.filter(
     (d) => d.amount > 0
   );
@@ -171,7 +170,7 @@ export default function GrowthTab({
                   letterSpacing: "0.03em",
                 }}
               >
-                {t("growth.weight")}
+                {translate("growth.weight")}
               </span>
             </div>
 
@@ -246,7 +245,7 @@ export default function GrowthTab({
                   letterSpacing: "0.03em",
                 }}
               >
-                {t("growth.height")}
+                {translate("growth.height")}
               </span>
             </div>
 
@@ -321,7 +320,7 @@ export default function GrowthTab({
                   letterSpacing: "0.03em",
                 }}
               >
-                {t("growth.averageFeeding")}
+                {translate("growth.averageFeeding")}
               </span>
             </div>
 
@@ -345,7 +344,7 @@ export default function GrowthTab({
                 marginTop: 4,
               }}
             >
-              {t("growth.perDay30")}
+              {translate("growth.perDay30")}
             </div>
           </div>
         </div>
@@ -392,7 +391,7 @@ export default function GrowthTab({
                   letterSpacing: "0.03em",
                 }}
               >
-                {t("growth.averageSleep")}
+                {translate("growth.averageSleep")}
               </span>
             </div>
 
@@ -416,7 +415,7 @@ export default function GrowthTab({
                 marginTop: 4,
               }}
             >
-              {t("growth.perDay30")}
+              {translate("growth.perDay30")}
             </div>
           </div>
         </div>
@@ -433,7 +432,7 @@ export default function GrowthTab({
         {/* Daily Feeding Totals */}
         <div className="fade-in fade-in-5">
           <SectionCard
-            title={t("growth.dailyFeeding")}
+            title={translate("growth.dailyFeeding")}
             icon={<Icons.Bottle />}
             color={colors.feeding}
           >
@@ -518,7 +517,7 @@ export default function GrowthTab({
                   padding: 40,
                 }}
               >
-                {t("growth.noFeedingData")}
+                {translate("growth.noFeedingData")}
               </div>
             )}
           </SectionCard>
@@ -527,7 +526,7 @@ export default function GrowthTab({
         {/* Daily Sleep Totals */}
         <div className="fade-in fade-in-6">
           <SectionCard
-            title={t("growth.dailySleep")}
+            title={translate("growth.dailySleep")}
             icon={<Icons.Moon />}
             color={colors.sleep}
           >
@@ -612,7 +611,7 @@ export default function GrowthTab({
                   padding: 40,
                 }}
               >
-                {t("growth.noSleepData")}
+                {translate("growth.noSleepData")}
               </div>
             )}
           </SectionCard>
@@ -621,7 +620,7 @@ export default function GrowthTab({
         {/* Weight Chart */}
         <div className="fade-in fade-in-7">
           <SectionCard
-            title={t("growth.weightTrend")}
+            title={translate("growth.weightTrend")}
             icon={<Icons.Weight />}
             color={colors.growth}
           >
@@ -700,7 +699,7 @@ export default function GrowthTab({
                     value={selectedBar.value}
                     unit={units.weight}
                     color={colors.growth}
-                    actionLabel={t("button.edit")}
+                    actionLabel={translate("button.edit")}
                     onViewEntries={() => {
                       if (selectedBar.entry) {
                         onEditEntry?.(
@@ -724,8 +723,8 @@ export default function GrowthTab({
                 }}
               >
                 {weightSeries.length === 1
-                  ? t("growth.needTwoWeightMeasurements")
-                  : t("growth.noWeightData")}
+                  ? translate("growth.needTwoWeightMeasurements")
+                  : translate("growth.noWeightData")}
               </div>
             )}
           </SectionCard>
@@ -734,7 +733,7 @@ export default function GrowthTab({
         {/* Height Chart */}
         <div className="fade-in fade-in-8">
           <SectionCard
-            title={t("growth.heightTrend")}
+            title={translate("growth.heightTrend")}
             icon={<Icons.Ruler />}
             color={colors.height}
           >
@@ -813,7 +812,7 @@ export default function GrowthTab({
                     value={selectedBar.value}
                     unit={units.length}
                     color={colors.height}
-                    actionLabel={t("button.edit")}
+                    actionLabel={translate("button.edit")}
                     onViewEntries={() => {
                       if (selectedBar.entry) {
                         onEditEntry?.(
@@ -838,8 +837,8 @@ export default function GrowthTab({
                 }}
               >
                 {heightSeries.length === 1
-                  ? t("growth.needTwoHeightMeasurements")
-                  : t("growth.noHeightData")}
+                  ? translate("growth.needTwoHeightMeasurements")
+                  : translate("growth.noHeightData")}
               </div>
             )}
           </SectionCard>

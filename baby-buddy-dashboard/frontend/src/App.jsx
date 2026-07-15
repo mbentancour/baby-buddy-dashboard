@@ -5,7 +5,7 @@ import { UnitContext } from "./utils/units";
 import { Icons } from "./components/Icons";
 import { colors } from "./utils/colors";
 import { getAge, formatElapsed } from "./utils/formatters";
-import { t } from "./locales";
+import { t as translate } from "./locales";
 import OverviewTab from "./tabs/OverviewTab";
 import GrowthTab from "./tabs/GrowthTab";
 import NotesTab from "./tabs/NotesTab";
@@ -21,70 +21,70 @@ import TimerButton from "./components/TimerButton";
 import "./styles.css";
 
 const TABS = [
-  { id: "overview", label: t("tab.overview"), icon: <Icons.Activity /> },
-  { id: "growth", label: t("tab.growth"), icon: <Icons.TrendUp /> },
-  { id: "notes", label: t("tab.notes"), icon: <Icons.StickyNote /> },
+  { id: "overview", label: translate("tab.overview"), icon: <Icons.Activity /> },
+  { id: "growth", label: translate("tab.growth"), icon: <Icons.TrendUp /> },
+  { id: "notes", label: translate("tab.notes"), icon: <Icons.StickyNote /> },
 ];
 
 const ACTION_GROUPS = [
   {
-    label: t("group.track"),
+    label: translate("group.track"),
     actions: [
       {
         id: "feeding",
-        label: t("action.feeding"),
+        label: translate("action.feeding"),
         icon: <Icons.Bottle />,
         color: colors.feeding,
       },
       {
         id: "sleep",
-        label: t("action.sleep"),
+        label: translate("action.sleep"),
         icon: <Icons.Moon />,
         color: colors.sleep,
       },
       {
         id: "diaper",
-        label: t("action.diaper"),
+        label: translate("action.diaper"),
         icon: <Icons.Droplet />,
         color: colors.diaper,
       },
       {
         id: "tummy",
-        label: t("action.tummy"),
+        label: translate("action.tummy"),
         icon: <Icons.Sun />,
         color: colors.tummy,
       },
     ],
   },
   {
-    label: t("group.measure"),
+    label: translate("group.measure"),
     actions: [
       {
         id: "temp",
-        label: t("action.temp"),
+        label: translate("action.temp"),
         icon: <Icons.Temp />,
         color: colors.temp,
       },
       {
         id: "weight",
-        label: t("action.weight"),
+        label: translate("action.weight"),
         icon: <Icons.Weight />,
         color: colors.growth,
       },
       {
         id: "height",
-        label: t("action.height"),
+        label: translate("action.height"),
         icon: <Icons.Ruler />,
         color: colors.height,
       },
     ],
   },
   {
-    label: t("group.note"),
+    label: translate("group.note"),
     actions: [
       {
         id: "note",
-        label: t("action.note"),
+        label: translate("action.note"),
         icon: <Icons.StickyNote />,
         color: colors.note,
       },
@@ -95,19 +95,19 @@ const ACTION_GROUPS = [
 const TIMER_TYPES = [
   {
     id: "feeding",
-    label: t("action.feeding"),
+    label: translate("action.feeding"),
     icon: <Icons.Bottle />,
     color: colors.feeding,
   },
   {
     id: "sleep",
-    label: t("action.sleep"),
+    label: translate("action.sleep"),
     icon: <Icons.Moon />,
     color: colors.sleep,
   },
   {
     id: "tummy",
-    label: t("action.tummyTime"),
+    label: translate("action.tummyTime"),
     icon: <Icons.Sun />,
     color: colors.tummy,
   },
@@ -156,7 +156,7 @@ export default function App() {
             fontSize: 14,
           }}
         >
-          {t("status.loading")}
+          {translate("status.loading")}
         </span>
       </div>
     );
@@ -188,7 +188,7 @@ export default function App() {
 
             <div>
               <h1 className="baby-name">
-                {data.child?.first_name || t("general.baby")}
+                {data.child?.first_name || translate("general.baby")}
               </h1>
 
               {data.child?.birth_date && (
@@ -208,7 +208,7 @@ export default function App() {
           >
             {data.error && (
               <span className="sync-error">
-                {t("status.connectionError")}
+                {translate("status.connectionError")}
               </span>
             )}
 
@@ -224,7 +224,7 @@ export default function App() {
             <button
               className="refresh-btn"
               onClick={data.refetch}
-              title={t("button.refresh")}
+              title={translate("button.refresh")}
             >
               <Icons.Activity />
             </button>
@@ -304,7 +304,7 @@ export default function App() {
               <span
                 className="timer-elapsed"
                 style={{ cursor: "pointer" }}
-                title={t("tooltip.editStartTime")}
+                title={translate("tooltip.editStartTime")}
                 onClick={() => setEditingTimerId(t.id)}
               >
                 {formatElapsed(timer.elapsedMap[t.id] || 0)}
@@ -324,7 +324,7 @@ export default function App() {
                 }
               }}
             >
-              {t("button.save")}
+              {translate("button.save")}
             </button>
 
             <button
@@ -481,7 +481,7 @@ export default function App() {
         )}
 
         <TimerButton
-          label={t("button.timer")}
+          label={translate("button.timer")}
           icon={<Icons.Timer />}
           color={colors.feeding}
           active={false}
@@ -519,80 +519,7 @@ export default function App() {
       </div>
 
       {/* Modals */}
-      {modal?.type === "feeding" && (
-        <FeedingForm
-          childId={data.child?.id}
-          timerId={modal.timerId}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
-
-      {modal?.type === "sleep" && (
-        <SleepForm
-          childId={data.child?.id}
-          timerId={modal.timerId}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
-
-      {modal?.type === "diaper" && (
-        <DiaperForm
-          childId={data.child?.id}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
-
-      {modal?.type === "temp" && (
-        <TemperatureForm
-          childId={data.child?.id}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
-
-      {modal?.type === "tummy" && (
-        <TummyTimeForm
-          childId={data.child?.id}
-          timerId={modal.timerId}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
-
-      {modal?.type === "weight" && (
-        <WeightForm
-          childId={data.child?.id}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
-
-      {modal?.type === "height" && (
-        <HeightForm
-          childId={data.child?.id}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
-
-      {modal?.type === "note" && (
-        <NoteForm
-          childId={data.child?.id}
-          entry={modal.entry}
-          onDone={handleFormDone}
-          onClose={closeModal}
-        />
-      )}
+      ...
     </div>
     </UnitContext.Provider>
   );

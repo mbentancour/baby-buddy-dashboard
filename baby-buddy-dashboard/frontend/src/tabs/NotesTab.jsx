@@ -4,7 +4,7 @@ import TimelineItem from "../components/TimelineItem";
 import { Icons } from "../components/Icons";
 import { colors } from "../utils/colors";
 import { toNoteTimeline } from "../utils/formatters";
-import { t } from "../locales";
+import { t as translate } from "../locales";
 
 const COLLAPSED_COUNT = 5;
 
@@ -16,7 +16,7 @@ export default function NotesTab({ notes, onEditEntry }) {
   return (
     <div className="fade-in fade-in-1">
       <SectionCard
-        title={t("notes.title")}
+        title={translate("notes.title")}
         icon={<Icons.StickyNote />}
         color={colors.note}
       >
@@ -47,12 +47,10 @@ export default function NotesTab({ notes, onEditEntry }) {
                 onClick={() => setExpanded(!expanded)}
               >
                 {expanded
-                  ? t("common.showLess")
-                  : t("common.showMore", {
-                      count:
-                        noteTimeline.length -
-                        COLLAPSED_COUNT,
-                    })}
+                  ? translate("common.showLess")
+                  : `${translate("common.show")} ${
+                      noteTimeline.length - COLLAPSED_COUNT
+                    } ${translate("common.more")}`}
               </button>
             )}
           </div>
@@ -65,7 +63,7 @@ export default function NotesTab({ notes, onEditEntry }) {
               padding: 40,
             }}
           >
-            {t("notes.noNotes")}
+            {translate("notes.noNotes")}
           </div>
         )}
       </SectionCard>
