@@ -8,6 +8,20 @@
   --tooltip-bg: #1C1F2Eee;
   --mono: "JetBrains Mono", monospace;
   --font: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* General UI-chrome accent (loading spinner, active tab/chip, timer bar, settings
+     selectors, generic button default) - distinct from the fixed per-category colors
+     in utils/colors.js (feeding/sleep/diaper/...), which stay constant regardless of
+     this. Defaults to the same amber; overridable per light/dark mode via add-on config,
+     see utils/theme.js. */
+  --accent: #F59E0B;
+  --accent-03: color-mix(in srgb, var(--accent) 3%, transparent);
+  --accent-08: color-mix(in srgb, var(--accent) 8%, transparent);
+  --accent-09: color-mix(in srgb, var(--accent) 9%, transparent);
+  --accent-15: color-mix(in srgb, var(--accent) 15%, transparent);
+  --accent-25: color-mix(in srgb, var(--accent) 25%, transparent);
+  --accent-40: color-mix(in srgb, var(--accent) 40%, transparent);
+  --accent-60: color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
 body {
@@ -38,7 +52,7 @@ body {
   width: 32px;
   height: 32px;
   border: 3px solid var(--border);
-  border-top-color: #F59E0B;
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -55,8 +69,8 @@ body {
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: #F59E0B18;
-  color: #F59E0B;
+  background: var(--accent-09);
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,13 +156,13 @@ body {
   border-color: var(--text-dim);
 }
 .child-chip-active {
-  background: #F59E0B18;
-  color: #F59E0B;
-  border-color: #F59E0B40;
+  background: var(--accent-09);
+  color: var(--accent);
+  border-color: var(--accent-40);
 }
 .child-chip-active:hover {
-  color: #F59E0B;
-  border-color: #F59E0B40;
+  color: var(--accent);
+  border-color: var(--accent-40);
 }
 
 /* Timer bar */
@@ -158,8 +172,8 @@ body {
   justify-content: space-between;
   padding: 12px 16px;
   border-radius: 14px;
-  background: #F59E0B08;
-  border: 1px solid #F59E0B25;
+  background: var(--accent-03);
+  border: 1px solid var(--accent-25);
   margin-bottom: 16px;
   color: var(--text);
 }
@@ -168,7 +182,7 @@ body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #F59E0B;
+  background: var(--accent);
   animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -176,7 +190,7 @@ body {
   font-family: var(--mono);
   font-size: 16px;
   font-weight: 600;
-  color: #F59E0B;
+  color: var(--accent);
 }
 
 .timer-edit-input {
@@ -184,11 +198,10 @@ body {
   font-size: 12px;
   padding: 4px 8px;
   border-radius: 8px;
-  border: 1px solid #F59E0B40;
-  background: #F59E0B15;
-  color: #F59E0B;
+  border: 1px solid var(--accent-40);
+  background: var(--accent-15);
+  color: var(--accent);
   outline: none;
-  color-scheme: dark;
 }
 
 .timer-save-btn {
@@ -272,6 +285,17 @@ body {
   background: var(--bg);
   color: var(--text);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.tab-alert-dot {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #EF4444;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 /* Tab content */
@@ -458,6 +482,20 @@ body {
   border-radius: 3px;
 }
 
+/* Card grids (quick stats, section cards) */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .app {
@@ -472,5 +510,13 @@ body {
   .fab-container {
     bottom: 16px;
     right: 16px;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }

@@ -136,6 +136,25 @@ function emmaWeeklyTummy() {
   return entries;
 }
 
+function emmaMonthlyTummy() {
+  const entries = [...emmaTummyTimes()];
+  for (let d = 1; d < 30; d++) {
+    const base = daysAgo(d);
+    const sessions = 2 + Math.floor(Math.random() * 2);
+    for (let s = 0; s < sessions; s++) {
+      const start = new Date(base);
+      start.setHours(9 + s * 4, Math.floor(Math.random() * 30));
+      const mins = 8 + Math.floor(Math.random() * 10);
+      entries.push({
+        id: 700 + d * 10 + s, child: 1,
+        start: isoLocal(start), end: isoLocal(new Date(start.getTime() + mins * 60000)),
+        duration: duration(0, mins),
+      });
+    }
+  }
+  return entries;
+}
+
 function emmaMonthlyFeedings() {
   const entries = [];
   for (let d = 0; d < 30; d++) {
@@ -290,6 +309,42 @@ function liamMonthlySleep() {
   return entries;
 }
 
+function emmaMonthlyChanges() {
+  const entries = [...emmaChanges()];
+  for (let d = 1; d < 30; d++) {
+    const base = daysAgo(d);
+    const times = [1, 4, 7, 10, 13, 16, 19, 22];
+    times.forEach((h, i) => {
+      const t = new Date(base);
+      t.setHours(h, Math.floor(Math.random() * 30));
+      const solid = i % 3 === 0;
+      entries.push({
+        id: 600 + d * 10 + i, child: 1, time: isoLocal(t),
+        wet: true, solid, color: solid ? "brown" : "", amount: null,
+      });
+    });
+  }
+  return entries;
+}
+
+function liamMonthlyChanges() {
+  const entries = [...liamChanges()];
+  for (let d = 1; d < 30; d++) {
+    const base = daysAgo(d);
+    const times = [1, 4, 8, 12];
+    times.forEach((h, i) => {
+      const t = new Date(base);
+      t.setHours(h, Math.floor(Math.random() * 30));
+      const solid = i % 2 === 0;
+      entries.push({
+        id: 600 + d * 10 + i, child: 2, time: isoLocal(t),
+        wet: true, solid, color: solid ? "brown" : "", amount: null,
+      });
+    });
+  }
+  return entries;
+}
+
 // --- Shared generators (temperatures are similar for any age) ---
 
 function generateTemperatures(childId) {
@@ -298,6 +353,19 @@ function generateTemperatures(childId) {
     { id: 2, child: childId, time: isoLocal(hoursAgo(26)), temperature: 36.8 },
     { id: 3, child: childId, time: isoLocal(hoursAgo(50)), temperature: 36.5 },
     { id: 4, child: childId, time: isoLocal(hoursAgo(74)), temperature: 36.7 },
+  ];
+}
+
+function generateMedications(childId, name, dosage, dosageUnit, intervalHours) {
+  return [
+    {
+      id: childId * 100 + 1, child: childId, name, dosage, dosage_unit: dosageUnit,
+      time: isoLocal(hoursAgo(intervalHours - 2)), next_dose_interval: `${intervalHours}:00:00`, notes: "",
+    },
+    {
+      id: childId * 100 + 2, child: childId, name, dosage, dosage_unit: dosageUnit,
+      time: isoLocal(hoursAgo(intervalHours * 2 - 2)), next_dose_interval: `${intervalHours}:00:00`, notes: "",
+    },
   ];
 }
 
@@ -321,6 +389,16 @@ function emmaData() {
       id: i + 1, child: 1, date: isoDate(daysAgo((7 - i) * 15)),
       height: (49 + i * 1.5).toFixed(1),
     })),
+    // Emma: 4 months, ~36–41cm head circumference over 6 measurements
+    headCircumferences: Array.from({ length: 6 }, (_, i) => ({
+      id: i + 1, child: 1, date: isoDate(daysAgo((5 - i) * 15)),
+      head_circumference: (36 + i * 1.0).toFixed(1),
+    })),
+    bmis: Array.from({ length: 6 }, (_, i) => ({
+      id: i + 1, child: 1, date: isoDate(daysAgo((5 - i) * 15)),
+      bmi: (15.5 + i * 0.3).toFixed(1),
+    })),
+    medications: generateMedications(1, "Vitamin D", 400, "drops", 24),
     notes: [
       { id: 1, child: 1, note: "Emma smiled for the first time today!", time: isoLocal(hoursAgo(3)) },
       { id: 2, child: 1, note: "Started showing interest in colorful toys during tummy time", time: isoLocal(hoursAgo(8)) },
@@ -328,6 +406,8 @@ function emmaData() {
     ],
     monthlyFeedings: emmaMonthlyFeedings(),
     monthlySleep: emmaMonthlySleep(),
+    monthlyChanges: emmaMonthlyChanges(),
+    monthlyTummyTimes: emmaMonthlyTummy(),
     timers: [],
   };
 }
@@ -352,12 +432,24 @@ function liamData() {
       id: i + 1, child: 2, date: isoDate(daysAgo((5 - i) * 21)),
       height: (84.0 + i * 0.8).toFixed(1),
     })),
+    // Liam: 2 years, ~47–49cm head circumference over 5 measurements
+    headCircumferences: Array.from({ length: 5 }, (_, i) => ({
+      id: i + 1, child: 2, date: isoDate(daysAgo((4 - i) * 30)),
+      head_circumference: (47 + i * 0.3).toFixed(1),
+    })),
+    bmis: Array.from({ length: 5 }, (_, i) => ({
+      id: i + 1, child: 2, date: isoDate(daysAgo((4 - i) * 30)),
+      bmi: (16.0 + i * 0.1).toFixed(1),
+    })),
+    medications: generateMedications(2, "Paracetamol", 5, "ml", 6),
     notes: [
       { id: 4, child: 2, note: "Liam said 'banana' clearly for the first time", time: isoLocal(hoursAgo(5)) },
       { id: 5, child: 2, note: "Loves playing with building blocks, stacked 5 high today", time: isoLocal(hoursAgo(28)) },
     ],
     monthlyFeedings: liamMonthlyFeedings(),
     monthlySleep: liamMonthlySleep(),
+    monthlyChanges: liamMonthlyChanges(),
+    monthlyTummyTimes: [],
     timers: [],
   };
 }

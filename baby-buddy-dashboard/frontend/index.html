@@ -12,7 +12,11 @@
     />
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { background: #0F1117; }
+      /* var(--bg) resolves immediately if the backend already inlined a theme override
+         earlier in <head> (see server.py's build_theme_css) - falls back to the built-in
+         dark default otherwise. A literal hardcoded color here would ignore any configured
+         light theme and paint dark for a flash on every load, override or not. */
+      body { background: var(--bg, #0F1117); }
     </style>
   </head>
   <body>

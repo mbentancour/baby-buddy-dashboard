@@ -32,14 +32,20 @@ export function useBabyData() {
   const [temperatures, setTemperatures] = useState([]);
   const [weights, setWeights] = useState([]);
   const [heights, setHeights] = useState([]);
+  const [headCircumferences, setHeadCircumferences] = useState([]);
+  const [bmis, setBmis] = useState([]);
+  const [medications, setMedications] = useState([]);
   const [monthlyFeedings, setMonthlyFeedings] = useState([]);
   const [monthlySleep, setMonthlySleep] = useState([]);
+  const [monthlyChanges, setMonthlyChanges] = useState([]);
   const [notes, setNotes] = useState([]);
   const [timers, setTimers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastSync, setLastSync] = useState(null);
   const [unitSystem, setUnitSystem] = useState("metric");
+  const [childSex, setChildSex] = useState("");
+  const [theme, setTheme] = useState(null);
   const intervalRef = useRef(null);
   const childIdRef = useRef(null);
 
@@ -75,10 +81,14 @@ export function useBabyData() {
         tempRes,
         weightRes,
         heightRes,
+        headCircumferenceRes,
+        bmiRes,
+        medicationRes,
         timersRes,
         notesRes,
         monthlyFeedingsRes,
         monthlySleepRes,
+        monthlyChangesRes,
       ] = await Promise.all([
         api.getFeedings({ child: c, start_min: todayMin, start_max: todayMax, limit: 100, ordering: "-start" }),
         api.getFeedings({ child: c, start_min: weekMin, limit: 200, ordering: "-start" }),
@@ -90,10 +100,14 @@ export function useBabyData() {
         api.getTemperature({ child: c, limit: 10, ordering: "-time" }),
         api.getWeight({ child: c, limit: 20, ordering: "-date" }),
         api.getHeight({ child: c, limit: 20, ordering: "-date" }),
+        api.getHeadCircumference({ child: c, limit: 20, ordering: "-date" }),
+        api.getBmi({ child: c, limit: 20, ordering: "-date" }),
+        api.getMedication({ child: c, limit: 30, ordering: "-time" }),
         api.getTimers(),
         api.getNotes({ child: c, limit: 20, ordering: "-time" }),
         api.getFeedings({ child: c, start_min: monthMin, limit: 500, ordering: "-start" }),
         api.getSleep({ child: c, start_min: monthMin, limit: 500, ordering: "-start" }),
+        api.getChanges({ child: c, date_min: monthMin, limit: 500, ordering: "-time" }),
       ]);
 
       setFeedings(feedingsRes.results || []);
@@ -106,10 +120,14 @@ export function useBabyData() {
       setTemperatures(tempRes.results || []);
       setWeights(weightRes.results || []);
       setHeights(heightRes.results || []);
+      setHeadCircumferences(headCircumferenceRes.results || []);
+      setBmis(bmiRes.results || []);
+      setMedications(medicationRes.results || []);
       setTimers(timersRes.results || []);
       setNotes(notesRes.results || []);
       setMonthlyFeedings(monthlyFeedingsRes.results || []);
       setMonthlySleep(monthlySleepRes.results || []);
+      setMonthlyChanges(monthlyChangesRes.results || []);
       setLastSync(new Date());
       setError(null);
     } catch (err) {
@@ -165,10 +183,14 @@ export function useBabyData() {
     setTemperatures(mock.temperatures);
     setWeights(mock.weights);
     setHeights(mock.heights);
+    setHeadCircumferences(mock.headCircumferences);
+    setBmis(mock.bmis);
+    setMedications(mock.medications);
     setTimers(mock.timers);
     setNotes(mock.notes);
     setMonthlyFeedings(mock.monthlyFeedings);
     setMonthlySleep(mock.monthlySleep);
+    setMonthlyChanges(mock.monthlyChanges);
     setLastSync(new Date());
     setLoading(false);
   }, []);
@@ -190,10 +212,14 @@ export function useBabyData() {
       setTemperatures(mock.temperatures);
       setWeights(mock.weights);
       setHeights(mock.heights);
+      setHeadCircumferences(mock.headCircumferences);
+      setBmis(mock.bmis);
+      setMedications(mock.medications);
       setTimers(mock.timers);
       setNotes(mock.notes);
       setMonthlyFeedings(mock.monthlyFeedings);
       setMonthlySleep(mock.monthlySleep);
+      setMonthlyChanges(mock.monthlyChanges);
     },
     [children, child]
   );
@@ -205,6 +231,8 @@ export function useBabyData() {
       .getConfig()
       .then((cfg) => {
         if (cfg.unit_system) setUnitSystem(cfg.unit_system);
+        if (cfg.child_sex) setChildSex(cfg.child_sex);
+        if (cfg.theme) setTheme(cfg.theme);
         if (cfg.demo_mode) {
           demoRef.current = true;
           loadMock();
@@ -236,14 +264,21 @@ export function useBabyData() {
     temperatures,
     weights,
     heights,
+    headCircumferences,
+    bmis,
+    medications,
     monthlyFeedings,
     monthlySleep,
+    monthlyChanges,
     notes,
     timers,
     loading,
     error,
     lastSync,
     unitSystem,
+    childSex,
+    theme,
+    demoMode: demoRef.current,
     refetch: fetchAll,
   };
 }

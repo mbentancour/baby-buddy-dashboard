@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { api } from "../../api";
-import Modal, { FormField, FormInput, FormButton } from "../Modal";
+import Modal, { FormField, FormInput, FormButton, FormError } from "../Modal";
+import DeleteButton from "../DeleteButton";
 import { colors } from "../../utils/colors";
-import { useUnits } from "../../utils/units";
+import { useUnits, UnitContext } from "../../utils/units";
+import { logError } from "../../utils/errorLog";
+import { useTranslation } from "../../locales";
+import { syncBmiForDate } from "../../utils/bmiSync";
 
 function toLocalDate(date) {
   const d = new Date(date);
@@ -10,17 +14,21 @@ function toLocalDate(date) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-export default function WeightForm({ childId, entry, onDone, onClose }) {
+export default function WeightForm({ childId, entry, onDone, onClose, heights = [], bmis = [] }) {
+  const t = useTranslation();
   const units = useUnits();
+  const unitSystem = useContext(UnitContext);
   const isEdit = !!entry;
   const [weight, setWeight] = useState(entry?.weight ? String(entry.weight) : "");
   const [date, setDate] = useState(entry?.date ? toLocalDate(entry.date) : toLocalDate(new Date()));
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!weight) return;
     setSaving(true);
+    setError(null);
     try {
       const data = {
         weight: parseFloat(weight),
@@ -32,16 +40,46 @@ export default function WeightForm({ childId, entry, onDone, onClose }) {
         data.child = childId;
         await api.createWeight(data);
       }
+
+      const matchingHeight = heights.find((h) => h.date === date);
+      if (matchingHeight) {
+        try {
+          await syncBmiForDate({
+            childId,
+            date,
+            weightValue: data.weight,
+            heightValue: parseFloat(matchingHeight.height),
+            bmis,
+            unitSystem,
+          });
+        } catch (bmiErr) {
+          logError("Auto-calculate BMI", bmiErr.message);
+        }
+      }
+
       onDone();
-    } catch {
+    } catch (err) {
       setSaving(false);
+      setError(t("common.saveFailed"));
+      logError(isEdit ? "Update Weight" : "Save Weight", err.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    setError(null);
+    try {
+      await api.deleteWeight(entry.id);
+      onDone();
+    } catch (err) {
+      setError(t("common.deleteFailed"));
+      logError("Delete Weight", err.message);
     }
   };
 
   return (
-    <Modal title={isEdit ? "Edit Weight" : "Log Weight"} onClose={onClose}>
+    <Modal title={isEdit ? t("weightForm.editTitle") : t("weightForm.logTitle")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
-        <FormField label={`Weight (${units.weight})`}>
+        <FormField label={t("weightForm.amount", { unit: units.weight })}>
           <FormInput
             type="number"
             value={weight}
@@ -54,7 +92,7 @@ export default function WeightForm({ childId, entry, onDone, onClose }) {
             required
           />
         </FormField>
-        <FormField label="Date">
+        <FormField label={t("common.date")}>
           <FormInput
             type="date"
             value={date}
@@ -62,8 +100,10 @@ export default function WeightForm({ childId, entry, onDone, onClose }) {
             required
           />
         </FormField>
+        <FormError message={error} />
+        {isEdit && <DeleteButton onDelete={handleDelete} disabled={saving} />}
         <FormButton color={colors.growth} disabled={saving || !weight}>
-          {saving ? "Saving..." : isEdit ? "Update Weight" : "Save Weight"}
+          {saving ? t("common.saving") : isEdit ? t("weightForm.update") : t("weightForm.save")}
         </FormButton>
       </form>
     </Modal>

@@ -1,4 +1,7 @@
+import { useTranslation } from "../locales";
+
 export default function DiaperBadge({ type }) {
+  const t = useTranslation();
   const bg =
     type === "solid" ? "#D97706" : type === "both" ? "#8B5CF6" : "#3B82F6";
   return (
@@ -15,7 +18,7 @@ export default function DiaperBadge({ type }) {
         letterSpacing: "0.04em",
       }}
     >
-      {type}
+      {t(`diaper.${type}`)}
     </span>
   );
 }

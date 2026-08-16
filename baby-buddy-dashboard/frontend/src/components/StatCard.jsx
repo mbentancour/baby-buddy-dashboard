@@ -1,6 +1,10 @@
-export default function StatCard({ icon, label, value, sub, color, accent }) {
+import { clickableProps } from "../utils/a11y";
+
+export default function StatCard({ icon, label, value, sub, color, accent, onClick }) {
   return (
     <div
+      {...(onClick ? clickableProps(onClick) : {})}
+      className={onClick ? "entry-clickable" : undefined}
       style={{
         background: "var(--card-bg)",
         borderRadius: 16,
@@ -12,6 +16,7 @@ export default function StatCard({ icon, label, value, sub, color, accent }) {
         position: "relative",
         overflow: "hidden",
         minWidth: 0,
+        cursor: onClick ? "pointer" : "default",
       }}
     >
       <div

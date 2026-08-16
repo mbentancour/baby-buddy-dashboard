@@ -14,3 +14,54 @@ configuration:
   unit_system:
     name: Unit System
     description: "Unit labels for measurements (metric: kg, cm, mL, °C — imperial: lb, in, oz, °F)"
+  enable_medication_alerts:
+    name: Medication Alerts
+    description: "Expose a binary_sensor.baby_buddy_medication_overdue entity in Home Assistant that turns on when any medication dose is overdue, so you can build your own automations/notifications on top of it"
+  child_sex:
+    name: Child's Sex
+    description: "Optional - lets the Growth tab overlay WHO growth-standard percentile curves (weight, height, head circumference, BMI) on top of your child's own measurements. Baby Buddy itself doesn't store this, so it's set here instead. Leave unset to hide the percentile overlay."
+  color_preset:
+    name: Color Preset
+    description: "Optional - pick a built-in color scheme instead of filling in the 14 'Theme' fields below by hand. Currently available: teal_terracotta (warm cream/near-black with a teal accent, light and dark). Any individual 'Theme' field you also set below overrides the preset's value for that field only."
+  theme_light_bg:
+    name: "Theme (Light): Background"
+    description: "Optional - custom page background color for light mode (any valid CSS color, e.g. #F5F2EA). Leave all seven 'Theme (Light)' fields unset to use the built-in theme; if you set any, set all seven or the light override is skipped."
+  theme_light_card_bg:
+    name: "Theme (Light): Card Background"
+    description: "Optional - custom card/panel background color for light mode."
+  theme_light_border:
+    name: "Theme (Light): Border"
+    description: "Optional - custom border color for light mode (hex or rgba(), e.g. rgba(40,30,16,0.08))."
+  theme_light_text:
+    name: "Theme (Light): Text"
+    description: "Optional - custom primary text color for light mode."
+  theme_light_text_muted:
+    name: "Theme (Light): Muted Text"
+    description: "Optional - custom secondary/muted text color for light mode."
+  theme_light_text_dim:
+    name: "Theme (Light): Dim Text"
+    description: "Optional - custom tertiary/dim text color for light mode (timestamps, labels)."
+  theme_light_accent:
+    name: "Theme (Light): Accent"
+    description: "Optional - custom accent color for light mode (main action button, active tab, timer bar). Per-category colors like the feeding/sleep/diaper icons are not affected."
+  theme_dark_bg:
+    name: "Theme (Dark): Background"
+    description: "Optional - custom page background color for dark mode. Leave all seven 'Theme (Dark)' fields unset to use the built-in dark theme; if you set any, set all seven or the dark override is skipped."
+  theme_dark_card_bg:
+    name: "Theme (Dark): Card Background"
+    description: "Optional - custom card/panel background color for dark mode."
+  theme_dark_border:
+    name: "Theme (Dark): Border"
+    description: "Optional - custom border color for dark mode."
+  theme_dark_text:
+    name: "Theme (Dark): Text"
+    description: "Optional - custom primary text color for dark mode."
+  theme_dark_text_muted:
+    name: "Theme (Dark): Muted Text"
+    description: "Optional - custom secondary/muted text color for dark mode."
+  theme_dark_text_dim:
+    name: "Theme (Dark): Dim Text"
+    description: "Optional - custom tertiary/dim text color for dark mode."
+  theme_dark_accent:
+    name: "Theme (Dark): Accent"
+    description: "Optional - custom accent color for dark mode."

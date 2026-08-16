@@ -1,7 +1,9 @@
 import { useUnits } from "../utils/units";
+import { useTranslation } from "../locales";
 
 export default function CustomTooltip({ active, payload, label, labelFormatter }) {
   const units = useUnits();
+  const t = useTranslation();
   if (!active || !payload?.length) return null;
   const formattedLabel = labelFormatter ? labelFormatter(label) : label;
   return (
@@ -37,8 +39,8 @@ export default function CustomTooltip({ active, payload, label, labelFormatter }
               display: "inline-block",
             }}
           />
-          {p.name}: {p.value}
-          {p.name === "amount" ? ` ${units.volume}` : p.name === "minutes" ? " min" : p.name === "weight" ? ` ${units.weight}` : p.name === "height" ? ` ${units.length}` : ""}
+          {t(`chartMetric.${p.name}`)}: {p.value}
+          {p.name === "amount" ? ` ${units.volume}` : p.name === "minutes" ? ` ${t("common.min")}` : p.name === "weight" ? ` ${units.weight}` : p.name === "height" ? ` ${units.length}` : ""}
         </div>
       ))}
     </div>

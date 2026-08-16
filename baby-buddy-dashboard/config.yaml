@@ -1,5 +1,5 @@
 name: "Baby Buddy Dashboard"
-version: "1.2.8"
+version: "1.7.7"
 slug: "baby-buddy-dashboard"
 description: "Modern dashboard for Baby Buddy with charts, timers, and quick-log actions.
               Supports running as a standalone web app or as a Home Assistant add-on.
@@ -20,15 +20,34 @@ ingress_port: 8099
 panel_icon: "mdi:baby-face-outline"
 panel_title: "Baby Dashboard"
 panel_admin: false
+homeassistant_api: true
 options:
   baby_buddy_url: ""
   baby_buddy_api_key: ""
   refresh_interval: 30
   demo_mode: false
   unit_system: metric
+  enable_medication_alerts: false
 schema:
   baby_buddy_url: url
   baby_buddy_api_key: password
   refresh_interval: "int(5,300)"
   demo_mode: bool
   unit_system: "list(metric|imperial)"
+  enable_medication_alerts: bool
+  child_sex: "list(male|female)?"
+  color_preset: "list(teal_terracotta)?"
+  theme_light_bg: "str?"
+  theme_light_card_bg: "str?"
+  theme_light_border: "str?"
+  theme_light_text: "str?"
+  theme_light_text_muted: "str?"
+  theme_light_text_dim: "str?"
+  theme_light_accent: "str?"
+  theme_dark_bg: "str?"
+  theme_dark_card_bg: "str?"
+  theme_dark_border: "str?"
+  theme_dark_text: "str?"
+  theme_dark_text_muted: "str?"
+  theme_dark_text_dim: "str?"
+  theme_dark_accent: "str?"
