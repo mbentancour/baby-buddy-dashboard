@@ -21,6 +21,7 @@ A modern, responsive dashboard for [Baby Buddy](https://github.com/babybuddy/bab
 - **Auto-refresh** — configurable polling interval keeps the dashboard up to date
 - **Dark theme** — designed for always-on displays and low-light nursery use
 - **Responsive** — works on desktop, tablet, and phone screens
+- **Multi-language** — English, Italian, and German, switchable per browser ([adding a language](TRANSLATING.md))
 
 ## Architecture
 
