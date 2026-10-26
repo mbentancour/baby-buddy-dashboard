@@ -17,6 +17,16 @@ export const Icons = {
       <path d="M9 16h6" opacity="0.4" />
     </svg>
   ),
+  Pump: () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M7 3h6v4H7z" />
+      <path d="M10 7v3" />
+      <path d="M6 10h8l1 11H5l1-11z" />
+      <path d="M13 5h4c2 0 3 1 3 3v3" />
+      <path d="M18 11h4" />
+      <path d="M8 14h4M8 17h4" opacity="0.4" />
+    </svg>
+  ),
   Moon: () => (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />

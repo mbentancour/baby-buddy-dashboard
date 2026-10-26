@@ -36,6 +36,7 @@ export default {
 
   action: {
     feeding: "Feeding",
+    pumping: "Pumping",
     sleep: "Sleep",
     diaper: "Diaper",
     tummy: "Tummy",
@@ -87,6 +88,7 @@ export default {
   chartMetric: {
     amount: "amount",
     count: "feedings",
+    sessions: "sessions",
     hours: "hours",
     minutes: "minutes",
     weight: "weight",
@@ -98,6 +100,7 @@ export default {
 
   overview: {
     feedings: "Feedings",
+    pumping: "Pumping",
     sleep: "Sleep",
     diapers: "Diapers",
     tummyTime: "Tummy Time",
@@ -108,15 +111,18 @@ export default {
     sessionToday: "{count} session today",
     sessionsToday: "{count} sessions today",
     recentFeedings: "Recent Feedings",
+    recentPumping: "Recent Pumping",
     sleepPattern: "Sleep Pattern",
     diaperChanges: "Diaper Changes",
     tummyTimeTitle: "Tummy Time",
     noFeedingsToday: "No feedings recorded today",
+    noPumpingToday: "No pumping recorded today",
     noSleepRecorded: "No sleep recorded",
     noDiaperChangesToday: "No diaper changes recorded today",
     noTummyTimeToday: "No tummy time recorded today",
     perSession: "per session",
     feedingsLegend: "Feedings",
+    pumpingSessionsLegend: "Sessions",
   },
 
   growth: {
@@ -207,6 +213,7 @@ export default {
 
   dayActivities: {
     feedingsTitle: "Feedings - {day}",
+    pumpingTitle: "Pumping - {day}",
     sleepTitle: "Sleep Sessions - {day}",
     tummyTitle: "Tummy Time - {day}",
     activitiesTitle: "Activities - {day}",
@@ -248,6 +255,7 @@ export default {
     editTitle: "Edit Feeding",
     logTitle: "Log Feeding",
     amount: "Amount ({unit})",
+    unit: "Amount unit",
     save: "Save Feeding",
     update: "Update Feeding",
     types: {
@@ -264,6 +272,14 @@ export default {
       parentFed: "Parent Fed",
       selfFed: "Self Fed",
     },
+  },
+
+  pumpingForm: {
+    editTitle: "Edit Pumping",
+    logTitle: "Log Pumping",
+    amount: "Amount ({unit})",
+    save: "Save Pumping",
+    update: "Update Pumping",
   },
 
   sleepForm: {

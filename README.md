@@ -1,6 +1,6 @@
 # Baby Buddy Dashboard
 
-A modern, responsive dashboard for [Baby Buddy](https://github.com/babybuddy/babybuddy), built as a Home Assistant add-on. Provides a clean interface for viewing and logging baby care activities - feedings, sleep, diaper changes, tummy time, temperature, growth, and more.
+A modern, responsive dashboard for [Baby Buddy](https://github.com/babybuddy/babybuddy), built as a Home Assistant add-on. Provides a clean interface for viewing and logging baby care activities - feedings, pumping, sleep, diaper changes, tummy time, temperature, growth, and more.
 
 ![Stack](https://img.shields.io/badge/React-18-blue) ![Stack](https://img.shields.io/badge/FastAPI-Python-green) ![Stack](https://img.shields.io/badge/Home%20Assistant-Add--on-blue)
 
@@ -12,10 +12,10 @@ A modern, responsive dashboard for [Baby Buddy](https://github.com/babybuddy/bab
 
 ## Features
 
-- **Overview dashboard** — daily stats, timelines, and charts for feedings, sleep, diapers, and tummy time
+- **Overview dashboard** — daily stats, timelines, and charts for feedings, pumping, sleep, diapers, and tummy time
 - **Growth tracking** — 30-day feeding totals, sleep averages, weight, and height trend charts
-- **Quick logging** — grouped floating action button to quickly log feedings, sleep, diaper changes, tummy time, temperature, weight, height, and notes
-- **Multiple timers** — run concurrent timers for overlapping activities (feeding, sleep, tummy time)
+- **Quick logging** — grouped floating action button to quickly log feedings, pumping, sleep, diaper changes, tummy time, temperature, weight, height, and notes
+- **Multiple timers** — run concurrent timers for overlapping activities (feeding, pumping, sleep, tummy time)
 - **Metric / Imperial** — configurable unit labels (kg/lb, cm/in, mL/oz, °C/°F) with no data conversion
 - **Demo mode** — built-in mock data to preview the dashboard without a Baby Buddy instance
 - **Auto-refresh** — configurable polling interval keeps the dashboard up to date
@@ -198,6 +198,7 @@ baby-buddy-dashboard/               # ← repository root
             │   ├── Modal.jsx        # Modal + form primitives
             │   └── forms/
             │       ├── FeedingForm.jsx
+            │       ├── PumpingForm.jsx
             │       ├── SleepForm.jsx
             │       ├── DiaperForm.jsx
             │       ├── TemperatureForm.jsx
@@ -233,7 +234,7 @@ baby-buddy-dashboard/               # ← repository root
 
 This dashboard uses Baby Buddy's REST API. A few important details about the filter parameters:
 
-- Endpoints with `start`/`end` fields (feedings, sleep, tummy times) use `start_min`/`start_max` for date filtering
+- Endpoints with `start`/`end` fields (feedings, pumping, sleep, tummy times) use `start_min`/`start_max` for date filtering
 - Endpoints with a `time` field (diaper changes, temperature) use `date_min`/`date_max`
 - All date filters expect **ISO 8601 datetime strings** (e.g., `2025-01-15T00:00:00`), not plain dates
 - Use an **explicit UTC offset or `Z`** for filters representing an exact instant, such as the rolling 24-hour sleep cutoff. Offset-free local timestamps can be ambiguous when daylight saving time ends.

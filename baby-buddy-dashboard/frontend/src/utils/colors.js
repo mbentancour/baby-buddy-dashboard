@@ -1,5 +1,6 @@
 export const colors = {
   feeding: "#F59E0B",
+  pumping: "#14B8A6",
   sleep: "#8B5CF6",
   diaper: "#3B82F6",
   growth: "#10B981",

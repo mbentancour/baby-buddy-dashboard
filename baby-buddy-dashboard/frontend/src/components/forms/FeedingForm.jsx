@@ -1,9 +1,14 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormSelect, FormInput, FormButton, FormError } from "../Modal";
+import DateTimeInput from "../DateTimeInput";
 import DeleteButton from "../DeleteButton";
 import { colors } from "../../utils/colors";
-import { useUnits } from "../../utils/units";
+import {
+  UnitContext,
+  millilitersToOunces,
+  ouncesToMilliliters,
+} from "../../utils/units";
 import { logError } from "../../utils/errorLog";
 import { useTranslation } from "../../locales";
 import { toApiDatetime } from "../../utils/formatters";
@@ -15,8 +20,9 @@ function toLocalDatetime(date) {
 
 export default function FeedingForm({ childId, timerId, entry, onDone, onClose }) {
   const t = useTranslation();
-  const units = useUnits();
+  const unitSystem = useContext(UnitContext);
   const isEdit = !!entry;
+  const initialAmountUnit = unitSystem === "imperial" ? "oz" : "ml";
 
   const TYPES = [
     { value: "breast milk", label: t("feedingForm.types.breastMilk") },
@@ -38,7 +44,12 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
   const fifteenMinsAgo = new Date(now.getTime() - 15 * 60 * 1000);
   const [type, setType] = useState(entry?.type || "breast milk");
   const [method, setMethod] = useState(entry?.method || "bottle");
-  const [amount, setAmount] = useState(entry?.amount != null ? String(entry.amount) : "");
+  const [amountUnit, setAmountUnit] = useState(initialAmountUnit);
+  const [amount, setAmount] = useState(
+    entry?.amount != null
+      ? String(initialAmountUnit === "oz" ? millilitersToOunces(entry.amount) : entry.amount)
+      : ""
+  );
   const [start, setStart] = useState(entry?.start ? toLocalDatetime(new Date(entry.start)) : toLocalDatetime(fifteenMinsAgo));
   const [end, setEnd] = useState(entry?.end ? toLocalDatetime(new Date(entry.end)) : toLocalDatetime(now));
   const [notes, setNotes] = useState(entry?.notes || "");
@@ -51,7 +62,10 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
     setError(null);
     try {
       const data = { type, method };
-      if (amount) data.amount = parseFloat(amount);
+      if (amount) {
+        const parsedAmount = parseFloat(amount);
+        data.amount = amountUnit === "oz" ? ouncesToMilliliters(parsedAmount) : parsedAmount;
+      }
       if (notes.trim()) data.notes = notes.trim();
       if (isEdit) {
         data.start = toApiDatetime(start);
@@ -95,26 +109,43 @@ export default function FeedingForm({ childId, timerId, entry, onDone, onClose }
         <FormField label={t("form.method")}>
           <FormSelect options={METHODS} value={method} onChange={(e) => setMethod(e.target.value)} />
         </FormField>
-        <FormField label={t("feedingForm.amount", { unit: units.volume })}>
-          <FormInput type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={t("common.optional")} min="0" step="5" />
+        <FormField label={t("feedingForm.amount", { unit: amountUnit === "oz" ? "oz" : "mL" })}>
+          <FormInput
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder={t("common.optional")}
+            min="0"
+            step="any"
+          />
+        </FormField>
+        <FormField label={t("feedingForm.unit")}>
+          <FormSelect
+            options={[
+              { value: "ml", label: "mL" },
+              { value: "oz", label: "oz" },
+            ]}
+            value={amountUnit}
+            onChange={(e) => {
+              const nextUnit = e.target.value;
+              if (amount) {
+                const converted =
+                  nextUnit === "oz"
+                    ? millilitersToOunces(amount)
+                    : ouncesToMilliliters(amount);
+                setAmount(String(converted));
+              }
+              setAmountUnit(nextUnit);
+            }}
+          />
         </FormField>
         {(isEdit || !timerId) && (
           <>
             <FormField label={t("common.start")}>
-              <FormInput
-                type="datetime-local"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-                required
-              />
+              <DateTimeInput value={start} onChange={setStart} required />
             </FormField>
             <FormField label={t("common.end")}>
-              <FormInput
-                type="datetime-local"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-                required
-              />
+              <DateTimeInput value={end} onChange={setEnd} required />
             </FormField>
           </>
         )}

@@ -13,6 +13,7 @@ import OverviewTab from "./tabs/OverviewTab";
 import GrowthTab from "./tabs/GrowthTab";
 import NotesTab from "./tabs/NotesTab";
 import FeedingForm from "./components/forms/FeedingForm";
+import PumpingForm from "./components/forms/PumpingForm";
 import SleepForm from "./components/forms/SleepForm";
 import DiaperForm from "./components/forms/DiaperForm";
 import TemperatureForm from "./components/forms/TemperatureForm";
@@ -42,6 +43,7 @@ function getActionGroups(t) {
       label: t("group.track"),
       actions: [
         { id: "feeding", label: t("action.feeding"), icon: <Icons.Bottle />, color: colors.feeding },
+        { id: "pumping", label: t("action.pumping"), icon: <Icons.Pump />, color: colors.pumping },
         { id: "sleep", label: t("action.sleep"), icon: <Icons.Moon />, color: colors.sleep },
         { id: "diaper", label: t("action.diaper"), icon: <Icons.Droplet />, color: colors.diaper },
         { id: "tummy", label: t("action.tummy"), icon: <Icons.Sun />, color: colors.tummy },
@@ -78,6 +80,7 @@ function getActionGroups(t) {
 function getTimerTypes(t) {
   return [
     { id: "feeding", label: t("action.feeding"), icon: <Icons.Bottle />, color: colors.feeding },
+    { id: "pumping", label: t("action.pumping"), icon: <Icons.Pump />, color: colors.pumping },
     { id: "sleep", label: t("action.sleep"), icon: <Icons.Moon />, color: colors.sleep },
     { id: "tummy", label: t("action.tummyTime"), icon: <Icons.Sun />, color: colors.tummy },
   ];
@@ -91,6 +94,7 @@ function toLocalDatetime(date) {
 function timerNameToType(name) {
   if (!name) return "feeding";
   const n = name.toLowerCase();
+  if (n.includes("pumping")) return "pumping";
   if (n.includes("sleep")) return "sleep";
   if (n.includes("tummy")) return "tummy";
   return "feeding";
@@ -302,7 +306,9 @@ export default function App() {
             childId={data.child?.id}
             demoMode={data.demoMode}
             feedings={data.feedings}
+            pumping={data.pumping}
             weeklyFeedings={data.weeklyFeedings}
+            weeklyPumping={data.weeklyPumping}
             sleepEntries={data.sleepEntries}
             weeklySleep={data.weeklySleep}
             changes={data.changes}
@@ -427,6 +433,15 @@ export default function App() {
       {/* Modals */}
       {modal?.type === "feeding" && (
         <FeedingForm
+          childId={data.child?.id}
+          timerId={modal.timerId}
+          entry={modal.entry}
+          onDone={handleFormDone}
+          onClose={closeModal}
+        />
+      )}
+      {modal?.type === "pumping" && (
+        <PumpingForm
           childId={data.child?.id}
           timerId={modal.timerId}
           entry={modal.entry}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton, FormError } from "../Modal";
+import DateTimeInput from "../DateTimeInput";
 import DeleteButton from "../DeleteButton";
 import { colors } from "../../utils/colors";
 import { useUnits } from "../../utils/units";
@@ -71,12 +72,7 @@ export default function TemperatureForm({ childId, entry, onDone, onClose }) {
           />
         </FormField>
         <FormField label={t("common.time")}>
-          <FormInput
-            type="datetime-local"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-          />
+          <DateTimeInput value={time} onChange={setTime} required />
         </FormField>
         <FormError message={error} />
         {isEdit && <DeleteButton onDelete={handleDelete} disabled={saving} />}

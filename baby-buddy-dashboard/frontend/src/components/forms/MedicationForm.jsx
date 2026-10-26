@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormSelect, FormInput, FormButton, FormError } from "../Modal";
+import DateTimeInput from "../DateTimeInput";
 import DeleteButton from "../DeleteButton";
 import { colors } from "../../utils/colors";
 import { logError } from "../../utils/errorLog";
@@ -105,12 +106,7 @@ export default function MedicationForm({ childId, entry, onDone, onClose }) {
           <FormSelect options={DOSAGE_UNITS} value={dosageUnit} onChange={(e) => setDosageUnit(e.target.value)} />
         </FormField>
         <FormField label={t("form.timeGiven")}>
-          <FormInput
-            type="datetime-local"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-          />
+          <DateTimeInput value={time} onChange={setTime} required />
         </FormField>
         <FormField label={t("form.nextDoseInHours")}>
           <FormInput

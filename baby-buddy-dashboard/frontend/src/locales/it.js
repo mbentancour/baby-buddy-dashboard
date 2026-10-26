@@ -36,6 +36,7 @@ export default {
 
   action: {
     feeding: "Pappa",
+    pumping: "Tiralatte",
     sleep: "Sonno",
     diaper: "Pannolino",
     tummy: "Pancia",
@@ -87,6 +88,7 @@ export default {
   chartMetric: {
     amount: "quantità",
     count: "pappe",
+    sessions: "sessioni",
     hours: "ore",
     minutes: "minuti",
     weight: "peso",
@@ -98,6 +100,7 @@ export default {
 
   overview: {
     feedings: "Pappe",
+    pumping: "Tiralatte",
     sleep: "Sonno",
     diapers: "Pannolini",
     tummyTime: "Tempo Pancia",
@@ -108,15 +111,18 @@ export default {
     sessionToday: "{count} sessione oggi",
     sessionsToday: "{count} sessioni oggi",
     recentFeedings: "Pappe Recenti",
+    recentPumping: "Sessioni Tiralatte Recenti",
     sleepPattern: "Andamento del Sonno",
     diaperChanges: "Cambi Pannolino",
     tummyTimeTitle: "Tempo Pancia",
     noFeedingsToday: "Nessuna pappa registrata oggi",
+    noPumpingToday: "Nessuna sessione tiralatte registrata oggi",
     noSleepRecorded: "Nessun sonno registrato",
     noDiaperChangesToday: "Nessun cambio pannolino registrato oggi",
     noTummyTimeToday: "Nessun tempo pancia registrato oggi",
     perSession: "per sessione",
     feedingsLegend: "Pappe",
+    pumpingSessionsLegend: "Sessioni",
   },
 
   growth: {
@@ -207,6 +213,7 @@ export default {
 
   dayActivities: {
     feedingsTitle: "Pappe - {day}",
+    pumpingTitle: "Tiralatte - {day}",
     sleepTitle: "Sessioni di Sonno - {day}",
     tummyTitle: "Tempo Pancia - {day}",
     activitiesTitle: "Attività - {day}",
@@ -248,6 +255,7 @@ export default {
     editTitle: "Modifica Pappa",
     logTitle: "Registra Pappa",
     amount: "Quantità ({unit})",
+    unit: "Unità di quantità",
     save: "Salva Pappa",
     update: "Aggiorna Pappa",
     types: {
@@ -264,6 +272,14 @@ export default {
       parentFed: "Imboccato dal Genitore",
       selfFed: "Da Solo",
     },
+  },
+
+  pumpingForm: {
+    editTitle: "Modifica Tiralatte",
+    logTitle: "Registra Tiralatte",
+    amount: "Quantità ({unit})",
+    save: "Salva Tiralatte",
+    update: "Aggiorna Tiralatte",
   },
 
   sleepForm: {

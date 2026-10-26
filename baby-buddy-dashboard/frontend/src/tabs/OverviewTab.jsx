@@ -28,6 +28,9 @@ import {
   aggregateTummyByDay,
   getEntriesForDay,
   parseDuration,
+  formatDuration,
+  formatTime,
+  timeAgo,
 } from "../utils/formatters";
 import { useUnits } from "../utils/units";
 import { clickableProps } from "../utils/a11y";
@@ -36,7 +39,7 @@ import { useTranslation } from "../locales";
 
 const COLLAPSED_COUNT = 2;
 
-export default function OverviewTab({ childId, demoMode, feedings, weeklyFeedings: weeklyFeedingsRaw, sleepEntries, weeklySleep, changes, tummyTimes, weeklyTummyTimes, onEditEntry }) {
+export default function OverviewTab({ childId, demoMode, feedings, pumping, weeklyFeedings: weeklyFeedingsRaw, weeklyPumping: weeklyPumpingRaw, sleepEntries, weeklySleep, changes, tummyTimes, weeklyTummyTimes, onEditEntry }) {
   const t = useTranslation();
   const units = useUnits();
   const [expanded, setExpanded] = useState({});
@@ -55,10 +58,15 @@ export default function OverviewTab({ childId, demoMode, feedings, weeklyFeeding
   const diaperTimeline = toDiaperTimeline(changes);
   const sleepBlocks = toSleepBlocks(sleepEntries);
   const weeklyFeedings = aggregateByDayOfWeek(weeklyFeedingsRaw, "amount");
+  const weeklyPumping = aggregateByDayOfWeek(weeklyPumpingRaw, "amount").map((day) => ({
+    ...day,
+    sessions: day.count,
+  }));
   const sleepByDay = aggregateSleepByDay(weeklySleep);
   const tummyByDay = aggregateTummyByDay(weeklyTummyTimes);
 
   const totalFeeding = feedings.reduce((s, f) => s + (f.amount || 0), 0);
+  const totalPumping = pumping.reduce((sum, entry) => sum + (entry.amount || 0), 0);
   const totalSleep = sleepEntries.reduce(
     (s, e) => s + parseDuration(e.duration),
     0
@@ -83,6 +91,12 @@ export default function OverviewTab({ childId, demoMode, feedings, weeklyFeeding
       setSelectedBar({ type, label, value: amount, value2: count });
       return;
     }
+    if (type === "pumping") {
+      const amount = data.activePayload?.find((p) => p.dataKey === "amount")?.value;
+      const sessions = data.activePayload?.find((p) => p.dataKey === "sessions")?.value;
+      setSelectedBar({ type, label, value: amount, value2: sessions });
+      return;
+    }
     const value = data.activePayload?.[0]?.value;
     setSelectedBar({ type, label, value });
   };
@@ -91,6 +105,8 @@ export default function OverviewTab({ childId, demoMode, feedings, weeklyFeeding
     let dayData = [];
     if (type === "feeding") {
       dayData = getEntriesForDay(weeklyFeedingsRaw, day, "start");
+    } else if (type === "pumping") {
+      dayData = getEntriesForDay(weeklyPumpingRaw, day, "start");
     } else if (type === "sleep") {
       dayData = getEntriesForDay(weeklySleep, day, "start");
     } else if (type === "tummy") {
@@ -112,6 +128,15 @@ export default function OverviewTab({ childId, demoMode, feedings, weeklyFeeding
             sub={feedingTimeline[0] ? t("overview.lastSync", { time: feedingTimeline[0].detail }) : undefined}
             color={colors.feeding}
             onClick={() => setShowReport(true)}
+          />
+        </div>
+        <div className="fade-in fade-in-2">
+          <StatCard
+            icon={<Icons.Pump />}
+            label={t("overview.pumping")}
+            value={t("overview.today", { value: `${Math.round(totalPumping)} ${units.volume}` })}
+            sub={t(pumping.length === 1 ? "overview.sessionToday" : "overview.sessionsToday", { count: pumping.length })}
+            color={colors.pumping}
           />
         </div>
         <div className="fade-in fade-in-2">
@@ -227,6 +252,75 @@ export default function OverviewTab({ childId, demoMode, feedings, weeklyFeeding
                     unit2={t("chartMetric.count")}
                     color={colors.feeding}
                     onViewEntries={() => openDayModal(selectedBar.label, "feeding")}
+                    onDismiss={() => setSelectedBar(null)}
+                  />
+                )}
+              </>
+            )}
+          </SectionCard>
+        </div>
+
+        {/* Pumping */}
+        <div className="fade-in fade-in-3">
+          <SectionCard title={t("overview.recentPumping")} icon={<Icons.Pump />} color={colors.pumping}>
+            {pumping.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                {(expanded.pumping ? pumping : pumping.slice(0, COLLAPSED_COUNT)).map((entry, index, entries) => (
+                  <div key={entry.id} className="entry-clickable" {...clickableProps(() => onEditEntry?.("pumping", entry))}>
+                    <TimelineItem
+                      time={formatTime(entry.end || entry.start)}
+                      label={`${entry.amount} ${units.volume}`}
+                      detail={`${formatDuration(entry.duration)} · ${timeAgo(entry.end || entry.start)}`}
+                      color={colors.pumping}
+                      isLast={index === entries.length - 1}
+                    />
+                  </div>
+                ))}
+                {pumping.length > COLLAPSED_COUNT && (
+                  <button className="expand-toggle" onClick={() => toggle("pumping")}>
+                    {expanded.pumping ? t("common.showLess") : t("common.showMore", { count: pumping.length - COLLAPSED_COUNT })}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div style={{ color: "var(--text-dim)", fontSize: 13, textAlign: "center", padding: 20 }}>
+                {t("overview.noPumpingToday")}
+              </div>
+            )}
+            {weeklyPumping.some((day) => day.amount > 0 || day.sessions > 0) && (
+              <>
+                <div style={{ display: "flex", gap: 14, marginTop: 16, fontSize: 11, color: "var(--text-muted)" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: 2, background: colors.pumping, display: "inline-block" }} />
+                    {units.volume}
+                  </span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: 2, background: `${colors.pumping}55`, display: "inline-block" }} />
+                    {t("overview.pumpingSessionsLegend")}
+                  </span>
+                </div>
+                <div style={{ marginTop: 8, height: 120 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={weeklyPumping} barSize={14} barGap={4} onClick={(data) => handleChartClick(data, "pumping")}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#252836" vertical={false} />
+                      <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#5A6178" }} axisLine={false} tickLine={false} />
+                      <YAxis yAxisId="left" hide />
+                      <YAxis yAxisId="right" hide orientation="right" />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Bar yAxisId="left" dataKey="amount" fill={colors.pumping} radius={[6, 6, 0, 0]} opacity={0.85} cursor="pointer" />
+                      <Bar yAxisId="right" dataKey="sessions" fill={colors.pumping} radius={[6, 6, 0, 0]} opacity={0.35} cursor="pointer" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+                {selectedBar?.type === "pumping" && (
+                  <ChartDetailBar
+                    label={selectedBar.label}
+                    value={selectedBar.value}
+                    unit={units.volume}
+                    value2={selectedBar.value2}
+                    unit2={t("chartMetric.sessions")}
+                    color={colors.pumping}
+                    onViewEntries={() => openDayModal(selectedBar.label, "pumping")}
                     onDismiss={() => setSelectedBar(null)}
                   />
                 )}

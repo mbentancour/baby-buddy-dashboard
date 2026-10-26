@@ -20,6 +20,7 @@ export default function DayActivitiesModal({ day, type, data, onEditEntry, onClo
   const getIcon = () => {
     switch (type) {
       case "feeding": return <Icons.Bottle />;
+      case "pumping": return <Icons.Pump />;
       case "sleep": return <Icons.Moon />;
       case "tummy": return <Icons.Sun />;
       default: return <Icons.Activity />;
@@ -29,6 +30,7 @@ export default function DayActivitiesModal({ day, type, data, onEditEntry, onClo
   const getColor = () => {
     switch (type) {
       case "feeding": return colors.feeding;
+      case "pumping": return colors.pumping;
       case "sleep": return colors.sleep;
       case "tummy": return colors.tummy;
       default: return colors.diaper;
@@ -37,6 +39,7 @@ export default function DayActivitiesModal({ day, type, data, onEditEntry, onClo
 
   const getTitle = () => {
     if (type === "feeding") return t("dayActivities.feedingsTitle", { day });
+    if (type === "pumping") return t("dayActivities.pumpingTitle", { day });
     if (type === "sleep") return t("dayActivities.sleepTitle", { day });
     if (type === "tummy") return t("dayActivities.tummyTitle", { day });
     return t("dayActivities.activitiesTitle", { day });
@@ -70,6 +73,31 @@ export default function DayActivitiesModal({ day, type, data, onEditEntry, onClo
                 detail={f.detail}
                 color={colors.feeding}
                 isLast={i === arr.length - 1}
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (type === "pumping") {
+      return (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {data.map((entry, index, entries) => (
+            <div
+              key={entry.id}
+              className="entry-clickable"
+              {...clickableProps(() => {
+                onEditEntry?.("pumping", entry);
+                onClose();
+              })}
+            >
+              <TimelineItem
+                time={new Date(entry.end || entry.start).toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" })}
+                label={`${entry.amount} ${units.volume}`}
+                detail={entry.duration ? `${Math.round(parseDuration(entry.duration) * 60)} ${t("common.min")}` : undefined}
+                color={colors.pumping}
+                isLast={index === entries.length - 1}
               />
             </div>
           ))}

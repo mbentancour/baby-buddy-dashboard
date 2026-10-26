@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormInput, FormButton, FormError } from "../Modal";
+import DateTimeInput from "../DateTimeInput";
 import DeleteButton from "../DeleteButton";
 
 import { colors } from "../../utils/colors";
@@ -76,20 +77,10 @@ export default function SleepForm({ childId, timerId, entry, onDone, onClose }) 
         ) : (
           <>
             <FormField label={t("common.start")}>
-              <FormInput
-                type="datetime-local"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-                required
-              />
+              <DateTimeInput value={start} onChange={setStart} required />
             </FormField>
             <FormField label={t("common.end")}>
-              <FormInput
-                type="datetime-local"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-                required
-              />
+              <DateTimeInput value={end} onChange={setEnd} required />
             </FormField>
           </>
         )}

@@ -369,10 +369,53 @@ function generateMedications(childId, name, dosage, dosageUnit, intervalHours) {
   ];
 }
 
+function generatePumping(childId) {
+  const sessions = [
+    { hours: 2, minutes: 18, amount: 120 },
+    { hours: 7, minutes: 22, amount: 95 },
+  ];
+  return sessions.map((session, index) => {
+    const end = hoursAgo(session.hours);
+    const start = new Date(end.getTime() - session.minutes * 60000);
+    return {
+      id: childId * 100 + index + 1,
+      child: childId,
+      start: isoLocal(start),
+      end: isoLocal(end),
+      duration: duration(0, session.minutes),
+      amount: session.amount,
+      notes: "",
+    };
+  });
+}
+
+function generateWeeklyPumping(childId) {
+  const entries = [...generatePumping(childId)];
+  for (let day = 1; day <= 6; day++) {
+    for (let session = 0; session < 2; session++) {
+      const end = daysAgo(day);
+      end.setHours(8 + session * 8, 15);
+      const minutes = 18 + ((day + session) % 6);
+      entries.push({
+        id: childId * 1000 + day * 10 + session,
+        child: childId,
+        start: isoLocal(new Date(end.getTime() - minutes * 60000)),
+        end: isoLocal(end),
+        duration: duration(0, minutes),
+        amount: 85 + ((day + session) % 4) * 10,
+        notes: "",
+      });
+    }
+  }
+  return entries;
+}
+
 function emmaData() {
   return {
     feedings: emmaFeedings(),
+    pumping: generatePumping(1),
     weeklyFeedings: emmaWeeklyFeedings(),
+    weeklyPumping: generateWeeklyPumping(1),
     sleepEntries: emmaSleep(),
     weeklySleep: emmaWeeklySleep(),
     changes: emmaChanges(),
@@ -415,7 +458,9 @@ function emmaData() {
 function liamData() {
   return {
     feedings: liamFeedings(),
+    pumping: [],
     weeklyFeedings: liamWeeklyFeedings(),
+    weeklyPumping: [],
     sleepEntries: liamSleep(),
     weeklySleep: liamWeeklySleep(),
     changes: liamChanges(),

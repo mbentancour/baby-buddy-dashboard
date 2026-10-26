@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api";
 import Modal, { FormField, FormSelect, FormInput, FormButton, FormError } from "../Modal";
+import DateTimeInput from "../DateTimeInput";
 import DeleteButton from "../DeleteButton";
 import { colors } from "../../utils/colors";
 import { logError } from "../../utils/errorLog";
@@ -69,12 +70,7 @@ export default function DiaperForm({ childId, entry, onDone, onClose, preset }) 
     <Modal title={isEdit ? t("diaperForm.editTitle") : t("diaperForm.logTitle")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <FormField label={t("common.time")}>
-          <FormInput
-            type="datetime-local"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-          />
+          <DateTimeInput value={time} onChange={setTime} required />
         </FormField>
         <div style={{ display: "flex", gap: 10, marginBottom: 14 }}>
           {[

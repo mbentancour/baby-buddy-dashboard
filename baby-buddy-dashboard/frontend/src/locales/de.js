@@ -36,6 +36,7 @@ export default {
 
   action: {
     feeding: "Füttern",
+    pumping: "Abpumpen",
     sleep: "Schlaf",
     diaper: "Windel",
     tummy: "Bauch",
@@ -87,6 +88,7 @@ export default {
   chartMetric: {
     amount: "Menge",
     count: "Fütterungen",
+    sessions: "Einheiten",
     hours: "Stunden",
     minutes: "Minuten",
     weight: "Gewicht",
@@ -98,6 +100,7 @@ export default {
 
   overview: {
     feedings: "Fütterungen",
+    pumping: "Abpumpen",
     sleep: "Schlaf",
     diapers: "Windeln",
     tummyTime: "Bauchlage",
@@ -108,15 +111,18 @@ export default {
     sessionToday: "{count} Einheit heute",
     sessionsToday: "{count} Einheiten heute",
     recentFeedings: "Letzte Fütterungen",
+    recentPumping: "Letzte Abpumpvorgänge",
     sleepPattern: "Schlafmuster",
     diaperChanges: "Windelwechsel",
     tummyTimeTitle: "Bauchlage",
     noFeedingsToday: "Heute wurden noch keine Fütterungen erfasst",
+    noPumpingToday: "Heute wurde noch kein Abpumpen erfasst",
     noSleepRecorded: "Noch kein Schlaf erfasst",
     noDiaperChangesToday: "Heute wurden noch keine Windelwechsel erfasst",
     noTummyTimeToday: "Heute wurde noch keine Bauchlage erfasst",
     perSession: "pro Einheit",
     feedingsLegend: "Fütterungen",
+    pumpingSessionsLegend: "Einheiten",
   },
 
   growth: {
@@ -207,6 +213,7 @@ export default {
 
   dayActivities: {
     feedingsTitle: "Fütterungen - {day}",
+    pumpingTitle: "Abpumpen - {day}",
     sleepTitle: "Schlafeinheiten - {day}",
     tummyTitle: "Bauchlage - {day}",
     activitiesTitle: "Aktivitäten - {day}",
@@ -248,6 +255,7 @@ export default {
     editTitle: "Fütterung bearbeiten",
     logTitle: "Fütterung erfassen",
     amount: "Menge ({unit})",
+    unit: "Mengeneinheit",
     save: "Fütterung speichern",
     update: "Fütterung aktualisieren",
     types: {
@@ -264,6 +272,14 @@ export default {
       parentFed: "Von Elternteil gefüttert",
       selfFed: "Selbst gegessen",
     },
+  },
+
+  pumpingForm: {
+    editTitle: "Abpumpen bearbeiten",
+    logTitle: "Abpumpen erfassen",
+    amount: "Menge ({unit})",
+    save: "Abpumpen speichern",
+    update: "Abpumpen aktualisieren",
   },
 
   sleepForm: {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api";
-import Modal, { FormField, FormInput, FormButton, FormError } from "../Modal";
+import Modal, { FormField, FormButton, FormError } from "../Modal";
+import DateTimeInput from "../DateTimeInput";
 import DeleteButton from "../DeleteButton";
 import { colors } from "../../utils/colors";
 import { logError } from "../../utils/errorLog";
@@ -56,12 +57,7 @@ export default function NoteForm({ childId, entry, onDone, onClose }) {
     <Modal title={isEdit ? t("noteForm.editTitle") : t("noteForm.logTitle")} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <FormField label={t("common.time")}>
-          <FormInput
-            type="datetime-local"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            required
-          />
+          <DateTimeInput value={time} onChange={setTime} required />
         </FormField>
         <FormField label={t("form.note")}>
           <textarea
